@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>ocioLutPrescription_icon.png</file>
+  </qresource>
+</RCC>
