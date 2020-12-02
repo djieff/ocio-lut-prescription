@@ -9,7 +9,7 @@ import subprocess
 import sys
 import PyOpenColorIO as OCIO
 
-from PySide2.QtCore import Qt, QCoreApplication
+from PySide2.QtCore import Qt, QCoreApplication, QSettings
 from PySide2.QtWidgets import QApplication, QFileDialog
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtGui import QIcon
@@ -330,6 +330,103 @@ def ocioReport(bakeCmdData):
     print("--------------------------------------")
 
 
+def saveSettings(settings, mainWindow):
+    """
+    """
+    settings.setValue("ocio/configPath", mainWindow.ocioCfgLineEdit.text())
+    settings.setValue("colorspaces/input", mainWindow.inputColorSpacesComboBox.currentText())
+    settings.setValue("colorspaces/shaper", mainWindow.shaperColorSpacesComboBox.currentText())
+    settings.setValue("colorspaces/output", mainWindow.outputColorSpacesComboBox.currentText())
+    settings.setValue("colorspaces/looks", mainWindow.looksComboBox.currentText())
+    settings.setValue("output/directory", mainWindow.outputDirLineEdit.text())
+    settings.setValue("baking/lutFormat", mainWindow.lutFormatComboBox.currentText())
+    settings.setValue("baking/cubeSize", mainWindow.cubeSizeComboBox.currentText())
+    settings.setValue("baking/shaperSize", mainWindow.shaperSizeComboBox.currentText())
+    settings.setValue("icc/whitePoint", mainWindow.iccWhitePointLineEdit.text())
+    settings.setValue("icc/displays", mainWindow.iccDisplaysComboBox.currentText())
+    settings.setValue("icc/description", mainWindow.iccDescriptionLineEdit.text())
+    settings.setValue("icc/copyright", mainWindow.iccCopyrightLineEdit.text())
+
+
+def loadSettings(settings, mainWindow):
+    """
+    """
+    ocioConfigPath = settings.value("ocio/configPath")
+    if not ocioConfigPath:
+        initializeUIDefault(mainWindow)
+    else:
+        mainWindow.ocioCfgLineEdit.setText(ocioConfigPath)
+        ocioConfigData = extractOCIOConfigData(ocioConfigPath)
+
+        if ocioConfigData:
+            initializeUIWithConfigData(mainWindow, ocioConfigData)
+
+            index = mainWindow.inputColorSpacesComboBox.findText(
+                settings.value("colorspaces/input"), Qt.MatchFixedString
+            )
+            if index >= 0:
+                mainWindow.inputColorSpacesComboBox.setCurrentIndex(index)
+
+            index = mainWindow.shaperColorSpacesComboBox.findText(
+                settings.value("colorspaces/shaper"), Qt.MatchFixedString
+            )
+            if index >= 0:
+                mainWindow.shaperColorSpacesComboBox.setCurrentIndex(index)
+
+            index = mainWindow.outputColorSpacesComboBox.findText(
+                settings.value("colorspaces/output"), Qt.MatchFixedString
+            )
+            if index >= 0:
+                mainWindow.outputColorSpacesComboBox.setCurrentIndex(index)
+
+            index = mainWindow.looksComboBox.findText(
+                settings.value("colorspaces/looks"), Qt.MatchFixedString
+            )
+            if index >= 0:
+                mainWindow.looksComboBox.setCurrentIndex(index)
+
+            mainWindow.outputDirLineEdit.setText(settings.value("output/directory"))
+
+            mainWindow.lutFormatComboBox.addItems(LUT_FORMATS)
+
+            index = mainWindow.lutFormatComboBox.findText(
+                settings.value("baking/lutFormat"), Qt.MatchFixedString
+            )
+            if index >= 0:
+                mainWindow.lutFormatComboBox.setCurrentIndex(index)
+            mainWindow.cubeSizeComboBox.addItems(SIZES_LIST)
+
+            index = mainWindow.cubeSizeComboBox.findText(
+                settings.value("baking/cubeSize"), Qt.MatchFixedString
+            )
+            if index >= 0:
+                mainWindow.cubeSizeComboBox.setCurrentIndex(index)
+
+            mainWindow.cubeSizeComboBox.setDisabled(True)
+
+            mainWindow.shaperSizeComboBox.addItems(SIZES_LIST)
+
+            index = mainWindow.shaperSizeComboBox.findText(
+                settings.value("baking/shaperSize"), Qt.MatchFixedString
+            )
+            if index >= 0:
+                mainWindow.shaperSizeComboBox.setCurrentIndex(index)
+            mainWindow.shaperSizeComboBox.setDisabled(True)
+
+            mainWindow.iccWhitePointLineEdit.setText(settings.value("icc/whitePoint"))
+
+            index = mainWindow.iccDisplaysComboBox.findText(
+                settings.value("icc/displays"), Qt.MatchFixedString
+            )
+            if index >= 0:
+                mainWindow.iccDisplaysComboBox.setCurrentIndex(index)
+
+            mainWindow.iccDescriptionLineEdit.setText(settings.value("icc/description"))
+
+            mainWindow.iccCopyrightLineEdit.setText(settings.value("icc/copyright"))
+            mainWindow.processBakeLutPushButton.setEnabled(True)
+
+
 def main():
     """main function
     """
@@ -346,7 +443,9 @@ def main():
     mainWindow = loader.load(os.path.join(os.path.dirname(__file__), "ocioLutPrescription_mainWindow.ui"))
     mainWindow.setWindowIcon(QIcon(":/icons/ocioLutPrescription_icon.png"))
 
-    initializeUIDefault(mainWindow)
+    # initializeUIDefault(mainWindow)
+    settings = QSettings()
+    loadSettings(settings, mainWindow)
 
     @contextmanager
     def ocioContext():
@@ -396,6 +495,7 @@ def main():
         bakeCmdData = getBakeCmdData(mainWindow)
         ocioBakeLutCmd = getOcioBakeLutCmd(bakeCmdData)
         subprocess.check_call(ocioBakeLutCmd)
+        saveSettings(settings, mainWindow)
         ocioReport(bakeCmdData)
 
     mainWindow.ocioCfgLoadPushButton.clicked.connect(lambda x: browseForOcioConfig(mainWindow))
