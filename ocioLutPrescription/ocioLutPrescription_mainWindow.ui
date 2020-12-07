@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>442</width>
-    <height>769</height>
+    <width>1016</width>
+    <height>904</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,147 +20,114 @@
    <string>ocioLutPrescription</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTabWidget" name="configTabWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>421</width>
-      <height>361</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="configTab">
-     <attribute name="title">
-      <string>Existing OCIO Config</string>
-     </attribute>
-     <widget class="QGroupBox" name="ocioGroupBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>401</width>
-        <height>111</height>
-       </rect>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QTabWidget" name="configTabWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <property name="title">
-       <string>OCIO Environment</string>
-      </property>
-      <widget class="QWidget" name="layoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>381</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <widget class="QWidget" name="configTab">
+       <attribute name="title">
+        <string>Existing OCIO Config</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QLabel" name="ocioCfgLabel">
-          <property name="text">
-           <string>OCIO</string>
+         <widget class="QGroupBox" name="ocioGroupBox">
+          <property name="title">
+           <string>OCIO Environment</string>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QLabel" name="ocioCfgLabel">
+               <property name="text">
+                <string>OCIO</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="ocioCfgLineEdit">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="placeholderText">
+                <string>&lt;Load a valid ocio configuration&gt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="ocioCfgLoadPushButton">
+               <property name="text">
+                <string>Load</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <widget class="QLabel" name="ocioSeqLabel">
+               <property name="text">
+                <string>SEQ</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="ocioSeqLineEdit">
+               <property name="placeholderText">
+                <string>&lt;optional&gt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="ocioShotLabel">
+               <property name="text">
+                <string>SHOT</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="ocioShotLineEdit">
+               <property name="placeholderText">
+                <string>&lt;optional&gt;</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="ocioCfgLineEdit">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-          <property name="placeholderText">
-           <string>&lt;Load a valid ocio configuration&gt;</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="ocioCfgLoadPushButton">
-          <property name="text">
-           <string>Load</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="layoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>13</x>
-         <y>70</y>
-         <width>372</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_9">
-        <item>
-         <widget class="QLabel" name="ocioSeqLabel">
-          <property name="text">
-           <string>SEQ</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="ocioSeqLineEdit">
-          <property name="placeholderText">
-           <string>&lt;optional&gt;</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="ocioShotLabel">
-          <property name="text">
-           <string>SHOT</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="ocioShotLineEdit">
-          <property name="placeholderText">
-           <string>&lt;optional&gt;</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="lutOutputGroupBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>210</y>
-        <width>401</width>
-        <height>101</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>LUT Output</string>
-      </property>
-      <widget class="QWidget" name="layoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>381</width>
-         <height>62</height>
-        </rect>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QRadioButton" name="outputColorSpacesRadioButton">
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="inputColorSpacesLabel">
             <property name="text">
-             <string>Output ColorSpace</string>
+             <string>Input ColorSpace</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QComboBox" name="outputColorSpacesComboBox">
+          <item row="0" column="1">
+           <widget class="QComboBox" name="inputColorSpacesComboBox">
+            <property name="editable">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="shaperColorSpacesCheckBox">
+            <property name="text">
+             <string>Shaper ColorSpace</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="shaperColorSpacesComboBox">
             <property name="editable">
              <bool>false</bool>
             </property>
@@ -169,289 +136,209 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <item>
-           <widget class="QRadioButton" name="looksRadioButton">
-            <property name="text">
-             <string>Look</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="looksComboBox">
-            <property name="editable">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="QGroupBox" name="lutOutputGroupBox">
+          <property name="title">
+           <string>LUT Output</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <widget class="QRadioButton" name="outputColorSpacesRadioButton">
+             <property name="text">
+              <string>Output ColorSpace</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="outputColorSpacesComboBox">
+             <property name="editable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QRadioButton" name="looksRadioButton">
+             <property name="text">
+              <string>Look</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="looksComboBox">
+             <property name="editable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="configFreeTab">
+       <attribute name="title">
+        <string>Config-Free LUT Baking</string>
+       </attribute>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="optionsTabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="bakingOptionsTab">
+       <attribute name="title">
+        <string>Baking Options</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QLabel" name="lutFormatLabel">
+          <property name="text">
+           <string>LUT Format</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QComboBox" name="lutFormatComboBox"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="cubeSizeCheckBox">
+          <property name="text">
+           <string>Cube Size</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" colspan="2">
+         <widget class="QComboBox" name="cubeSizeComboBox"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="shaperSizeCheckBox">
+          <property name="text">
+           <string>Shaper Size</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" colspan="2">
+         <widget class="QComboBox" name="shaperSizeComboBox"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="iccBakingOptionsTab">
+       <attribute name="title">
+        <string>ICC Reserved Options</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="iccWhitePointCheckBox">
+          <property name="text">
+           <string>White Point</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="iccWhitePointLineEdit"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="iccDisplaysCheckBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Display</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="iccDisplaysComboBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="iccDescriptionCheckBox">
+          <property name="text">
+           <string>Description</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="iccDescriptionLineEdit"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="iccCopyrightCheckBox">
+          <property name="text">
+           <string>Copyright</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="iccCopyrightLineEdit"/>
         </item>
        </layout>
       </widget>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>130</y>
-        <width>401</width>
-        <height>27</height>
-       </rect>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="outputDirGroupBox">
+      <property name="title">
+       <string>Output Directory</string>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="inputColorSpacesLabel">
+        <widget class="QLineEdit" name="outputDirLineEdit"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="outputDirBrowsePushButton">
          <property name="text">
-          <string>Input ColorSpace</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="inputColorSpacesComboBox">
-         <property name="editable">
-          <bool>false</bool>
+          <string>Browse</string>
          </property>
         </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>170</y>
-        <width>401</width>
-        <height>27</height>
-       </rect>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
-       <item>
-        <widget class="QCheckBox" name="shaperColorSpacesCheckBox">
-         <property name="text">
-          <string>Shaper ColorSpace</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="shaperColorSpacesComboBox">
-         <property name="editable">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="configFreeTab">
-     <attribute name="title">
-      <string>Config-Free LUT Baking</string>
-     </attribute>
-    </widget>
-   </widget>
-   <widget class="QPushButton" name="processBakeLutPushButton">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>660</y>
-      <width>421</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Bake LUT</string>
-    </property>
-   </widget>
-   <widget class="QGroupBox" name="outputDirGroupBox">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>570</y>
-      <width>421</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Output Directory</string>
-    </property>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>391</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QLineEdit" name="outputDirLineEdit"/>
-      </item>
-      <item>
-       <widget class="QPushButton" name="outputDirBrowsePushButton">
-        <property name="text">
-         <string>Browse</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </widget>
-   <widget class="QTabWidget" name="optionsTabWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>380</y>
-      <width>421</width>
-      <height>181</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="bakingOptionsTab">
-     <attribute name="title">
-      <string>Baking Options</string>
-     </attribute>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>11</y>
-        <width>388</width>
-        <height>131</height>
-       </rect>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QLabel" name="lutFormatLabel">
-           <property name="text">
-            <string>LUT Format</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="lutFormatComboBox"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QCheckBox" name="cubeSizeCheckBox">
-           <property name="text">
-            <string>Cube Size</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="cubeSizeComboBox"/>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="shaperSizeCheckBox">
-           <property name="text">
-            <string>Shaper Size</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="shaperSizeComboBox"/>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="iccBakingOptionsTab">
-     <attribute name="title">
-      <string>ICC Reserved Options</string>
-     </attribute>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>401</width>
-        <height>131</height>
-       </rect>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QPushButton" name="processBakeLutPushButton">
+      <property name="enabled">
+       <bool>true</bool>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_10">
-         <item>
-          <widget class="QCheckBox" name="iccWhitePointCheckBox">
-           <property name="text">
-            <string>White Point</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="iccWhitePointLineEdit"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_11">
-         <item>
-          <widget class="QCheckBox" name="iccDisplaysCheckBox">
-           <property name="text">
-            <string>Display</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="iccDisplaysComboBox">
-           <property name="editable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_12">
-         <item>
-          <widget class="QCheckBox" name="iccDescriptionCheckBox">
-           <property name="text">
-            <string>Description</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="iccDescriptionLineEdit"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_13">
-         <item>
-          <widget class="QCheckBox" name="iccCopyrightCheckBox">
-           <property name="text">
-            <string>Copyright</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="iccCopyrightLineEdit"/>
-         </item>
-        </layout>
-       </item>
-      </layout>
+      <property name="text">
+       <string>Bake LUT</string>
+      </property>
      </widget>
-    </widget>
-   </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>442</width>
-     <height>22</height>
+     <width>1016</width>
+     <height>30</height>
     </rect>
    </property>
   </widget>
