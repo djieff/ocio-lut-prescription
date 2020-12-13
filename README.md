@@ -39,6 +39,7 @@ Note: If you are already familiar with ociobakelut, the ui should be fairly simp
 ## Prerequesites
 - PyOpenColorIOv2
 - python3.8
+- pyside2
 
 ---
 
