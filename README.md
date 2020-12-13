@@ -2,7 +2,7 @@
 
 ---
 
-##Summary
+## Summary
 ocioLutPrescription is a gui tool used to wrap the ociobakelut command
 
 ---
