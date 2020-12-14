@@ -20,17 +20,26 @@ from PySide2.QtGui import QIcon, QPalette, QColor, QIntValidator
 from ocioLutPrescription import ocioLutPrescription_qrc
 
 SIZES_LIST = [str(x) for x in range(1, 67)]
-
-
 LUT_INFO_REGEX = re.compile(r"^(?P<lutFormat>\w+) \(.(?P<lutExt>\w{3})\)$")
 
 
 def _loadOCIOConfig(mainWindow, settings):
-    """
+    """Load an ocio configuration
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
+    :param settings: the application settings
+    :type settings: :class:`PySide2.QtCore.QSettings`
+
+    :raise OCIO.Exception: If the supplied ocio configuration
     """
     ocioConfigPath = mainWindow.ocioCfgLineEdit.text()
+
     if ocioConfigPath:
-        ocioConfigObj = OCIO.Config.CreateFromFile(ocioConfigPath)
+        try:
+            ocioConfigObj = OCIO.Config.CreateFromFile(ocioConfigPath)
+        except OCIO.Exception as err:
+            raise err
 
         if ocioConfigObj:
             initializeUIWithConfigData(mainWindow, ocioConfigObj)
@@ -38,7 +47,12 @@ def _loadOCIOConfig(mainWindow, settings):
 
 
 def _getColorSpaceNamesList(ocioConfigObj):
-    """
+    """Retrieve the colorspace names from the OCIO configuration object
+
+    :param ocioConfigObj: the ocio configuration object
+    :type ocioConfigObj: :class:`PyOpenColorIO.Config`
+
+    :return: the list of colorspaces available
     """
     return (
         colorSpaceName
@@ -48,7 +62,12 @@ def _getColorSpaceNamesList(ocioConfigObj):
 
 
 def _getLookNamesList(ocioConfigObj):
-    """
+    """Retrieve the look names from the OCIO configuration object
+
+    :param ocioConfigObj: the ocio configuration object
+    :type ocioConfigObj: :class:`PyOpenColorIO.Config`
+
+    :return: the list of looks available
     """
     return (
         lookName
@@ -58,7 +77,12 @@ def _getLookNamesList(ocioConfigObj):
 
 
 def _getDisplaysList(ocioConfigObj):
-    """
+    """Retrieve the display names from the OCIO configuration object
+
+    :param ocioConfigObj: the ocio configuration object
+    :type ocioConfigObj: :class:`PyOpenColorIO.Config`
+
+    :return: the list of displays available
     """
     return (
         display
@@ -68,7 +92,12 @@ def _getDisplaysList(ocioConfigObj):
 
 
 def browseForOcioConfig(mainWindow, settings):
-    """
+    """Browse for ocio config, and saves settings
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
+    :param settings: the application settings
+    :type settings: :class:`PySide2.QtCore.QSettings`
     """
     ocioConfig = QFileDialog.getOpenFileName(
         caption="Select OCIO Configuration",
@@ -78,7 +107,12 @@ def browseForOcioConfig(mainWindow, settings):
 
 
 def browseForLutOutputDir(mainWindow, settings):
-    """
+    """Browse for output directory, and saves settings
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
+    :param settings: the application settings
+    :type settings: :class:`PySide2.QtCore.QSettings`
     """
     outputDir = QFileDialog.getExistingDirectory()
     mainWindow.outputDirLineEdit.setText(outputDir)
@@ -88,6 +122,9 @@ def browseForLutOutputDir(mainWindow, settings):
 
 def checkToEnableBaking(mainWindow):
     """Check if all command prerequesites are selected, to enable baking
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
     """
     radioCheck = any(
         [
@@ -104,6 +141,9 @@ def checkToEnableBaking(mainWindow):
 
 def initializeUIDefault(mainWindow):
     """Initialize default UI state
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
     """
     mainWindow.cubeSizeComboBox.clear()
     mainWindow.shaperSizeComboBox.clear()
@@ -140,6 +180,11 @@ def initializeUIDefault(mainWindow):
 
 def initializeUIWithConfigData(mainWindow, ocioConfigObj):
     """Initialize UI state when a config is loaded
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
+    :param ocioConfigObj: the ocio configuration object
+    :type ocioConfigObj: :class:`PyOpenColorIO.Config`
     """
     mainWindow.shaperColorSpacesCheckBox.setEnabled(True)
     mainWindow.outputColorSpacesRadioButton.setEnabled(True)
@@ -161,9 +206,10 @@ def initializeUIWithConfigData(mainWindow, ocioConfigObj):
 
 
 def generateLutFileName(mainWindow):
-    """Generate the lut file name
+    """Generate the lut file name, use overriden name if available
 
-    :param mainWindow: ocioLutPrescription mainWindow
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
 
     :return: The lut file name
     :rtype: str
@@ -185,9 +231,10 @@ def generateLutFileName(mainWindow):
 
 
 def buildLutRadical(mainWindow):
-    """build and return the lut radical
+    """build and return the automagic lut radical
 
-    :param mainWindow: ocioLutPrescription mainWindow
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
 
     :return: the lut radical
     :rtype: str
@@ -201,7 +248,13 @@ def buildLutRadical(mainWindow):
 
 
 def getColorSpaceInputPrefix(mainWindow):
-    """
+    """build the lut radical colorspace input prefix from the UI
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
+
+    :return: colorspace input prefix
+    :rtype: str
     """
     envPrefix = "".join(
         [
@@ -231,7 +284,13 @@ def getColorSpaceInputPrefix(mainWindow):
 
 
 def getLutColorOutputSuffix(mainWindow):
-    """
+    """build the lut radical colorspace output suffix from the UI
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
+
+    :return: colorspace output suffix
+    :rtype: str
     """
     outputSuffix = mainWindow.outputColorSpacesComboBox.currentText().replace(" ", "_") + "_"\
         if mainWindow.outputColorSpacesComboBox.currentText() \
@@ -272,6 +331,9 @@ def getLutColorOutputSuffix(mainWindow):
 
 def getBakeCmdData(mainWindow):
     """From the mainWindow, get all the data needed to build an ociobakelut command
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
 
     :return: the data needed to build the command
     :rtype: dict
@@ -326,7 +388,9 @@ def getBakeCmdData(mainWindow):
 
 
 def getOcioBakeLutCmd(bakeCmdData):
-    """From the bake data dict, build a valid ociobakelut command
+    """Build a valid ociobakelut command
+
+    :param dict bakeCmdData: the data needed to build the ociobakelut command
 
     :return: the ociobakelut command to be executed
     :rtype: list
@@ -389,8 +453,15 @@ def ocioReport(bakeCmdData, ocioBakeLutCmd):
     )
 
 
-def settingsClear(app, mainWindow, settings):
-    """Clear all the settings, and restore default appearance
+def settingsClear(app, settings, mainWindow):
+    """Sets default Sytle/clear all the settings/restore default appearance
+
+    :param app: the application
+    :type app: :class:`PySide2.QtWidgets.QApplication`
+    :param settings: the application settings
+    :type settings: :class:`PySide2.QtCore.QSettings`
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
     """
     setSystemStyle(app, settings)
     initializeUIDefault(mainWindow)
@@ -399,6 +470,10 @@ def settingsClear(app, mainWindow, settings):
 
 def saveStyleSettings(settings, style=None):
     """save only the style setting
+
+    :param settings: the application settings
+    :type settings: :class:`PySide2.QtCore.QSettings`
+    :param str style: the type of style (system|dark)
     """
     settings.setValue("misc/style", style)
     settings.sync()
@@ -406,6 +481,11 @@ def saveStyleSettings(settings, style=None):
 
 def saveSettings(settings, mainWindow):
     """save settings
+
+    :param settings: the application settings
+    :type settings: :class:`PySide2.QtCore.QSettings`
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
     """
     settings.setValue("ocio/configPath", mainWindow.ocioCfgLineEdit.text())
     settings.setValue("colorspaces/input", mainWindow.inputColorSpacesComboBox.currentText())
@@ -423,8 +503,15 @@ def saveSettings(settings, mainWindow):
     settings.sync()
 
 
-def loadSettings(settings, mainWindow, app):
+def loadSettings(app, settings, mainWindow):
     """load applications settings
+
+    :param app: the application
+    :type app: :class:`PySide2.QtWidgets.QApplication`
+    :param settings: the application settings
+    :type settings: :class:`PySide2.QtCore.QSettings`
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
     """
     if settings.value("misc/style") == "dark":
         setDarkStyle(app, settings)
@@ -470,7 +557,7 @@ def loadSettings(settings, mainWindow, app):
             )
             if index >= 0:
                 mainWindow.lutFormatComboBox.setCurrentIndex(index)
-                checkForICC(mainWindow, mainWindow.lutFormatComboBox.currentText())
+
             mainWindow.cubeSizeComboBox.addItems(SIZES_LIST)
 
             index = mainWindow.cubeSizeComboBox.findText(
@@ -502,11 +589,17 @@ def loadSettings(settings, mainWindow, app):
 
             mainWindow.iccCopyrightLineEdit.setText(settings.value("icc/copyright"))
             mainWindow.outputDirLineEdit.setText(settings.value("output/directory"))
+
+            checkForICC(mainWindow, mainWindow.lutFormatComboBox.currentText())
             checkToEnableBaking(mainWindow)
 
 
 def checkForICC(mainWindow, lutFormatComboBoxText):
     """Enable ICC Options is icc format is selected
+
+    :param mainWindow: the application main window
+    :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
+    :param str lutFormatComboBoxText: the current text of the combo box
     """
     if "icc" in lutFormatComboBoxText:
         mainWindow.iccWhitePointCheckBox.setEnabled(True)
@@ -540,6 +633,11 @@ def checkForICC(mainWindow, lutFormatComboBoxText):
 
 def setDarkStyle(app, settings):
     """Sets custom dark style, and save
+
+    :param app: the application
+    :type app: :class:`PySide2.QtWidgets.QApplication`
+    :param settings: the application settings
+    :type settings: :class:`PySide2.QtCore.QSettings`
     """
     app.setStyle("Fusion")
     palette = QPalette()
@@ -562,6 +660,11 @@ def setDarkStyle(app, settings):
 
 def setSystemStyle(app, settings):
     """Sets back the default system style, and save
+
+    :param app: the application
+    :type app: :class:`PySide2.QtWidgets.QApplication`
+    :param settings: the application settings
+    :type settings: :class:`PySide2.QtCore.QSettings`
     """
     palette = QPalette()
     app.setPalette(palette)
@@ -569,7 +672,7 @@ def setSystemStyle(app, settings):
 
 
 def main():
-    """main function
+    """main application function
     """
     # Adds Ctrl+C support to kill app
     signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -596,7 +699,7 @@ def main():
         mainWindow.ocioShotLineEdit.setText(envSHOT)
         _loadOCIOConfig(mainWindow, settings)
     else:
-        loadSettings(settings, mainWindow, app)
+        loadSettings(app, settings, mainWindow)
 
     @contextmanager
     def ocioContext():
@@ -714,7 +817,7 @@ def main():
         lambda x: setSystemStyle(app, settings)
     )
     mainWindow.actionSettingsClear.triggered.connect(
-        lambda x: settingsClear(app, mainWindow, settings)
+        lambda x: settingsClear(app, settings, mainWindow)
     )
     mainWindow.processBakeLutPushButton.clicked.connect(processBakeLut)
 
