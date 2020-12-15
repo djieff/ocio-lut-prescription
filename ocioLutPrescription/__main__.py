@@ -10,6 +10,8 @@ import os
 import signal
 import subprocess
 import sys
+from typing import Generator
+
 import PyOpenColorIO as OCIO
 
 from PySide2.QtCore import Qt, QCoreApplication, QSettings
@@ -20,10 +22,10 @@ from PySide2.QtGui import QIcon, QPalette, QColor, QIntValidator
 from ocioLutPrescription import ocioLutPrescription_qrc
 
 SIZES_LIST = [str(x) for x in range(1, 67)]
-LUT_INFO_REGEX = re.compile(r"^(?P<lutFormat>\w+) \(.(?P<lutExt>\w{3})\)$")
+LUT_INFO_REGEX = re.compile(r"^(?P<lut_format>\w+) \(.(?P<lut_ext>\w{3})\)$")
 
 
-def _loadOCIOConfig(mainWindow, settings):
+def _load_ocio_config(mainWindow, settings):
     """Load an ocio configuration
 
     :param mainWindow: the application main window
@@ -33,65 +35,50 @@ def _loadOCIOConfig(mainWindow, settings):
 
     :raise OCIO.Exception: If the supplied ocio configuration
     """
-    ocioConfigPath = mainWindow.ocioCfgLineEdit.text()
+    ocio_config_path = mainWindow.ocioCfgLineEdit.text()
 
-    if ocioConfigPath:
+    if ocio_config_path:
         try:
-            ocioConfigObj = OCIO.Config.CreateFromFile(ocioConfigPath)
+            ocio_config_obj = OCIO.Config.CreateFromFile(ocio_config_path)
         except OCIO.Exception as err:
             raise err
 
-        if ocioConfigObj:
-            initializeUIWithConfigData(mainWindow, ocioConfigObj)
-            saveSettings(settings, mainWindow)
+        if ocio_config_obj:
+            initialize_ui_with_config_data(mainWindow, ocio_config_obj)
+            save_settings(settings, mainWindow)
 
 
-def _getColorSpaceNamesList(ocioConfigObj):
+def _get_colorspaces_names_list(ocio_config_obj: OCIO.Config) -> Generator["Any", "Any", None]:
     """Retrieve the colorspace names from the OCIO configuration object
-
-    :param ocioConfigObj: the ocio configuration object
-    :type ocioConfigObj: :class:`PyOpenColorIO.Config`
-
-    :return: the list of colorspaces available
     """
     return (
-        colorSpaceName
-        for colorSpaceName
-        in ocioConfigObj.getColorSpaceNames()
+        colorspace_name
+        for colorspace_name
+        in ocio_config_obj.getColorSpaceNames()
     )
 
 
-def _getLookNamesList(ocioConfigObj):
+def _get_looks_names_list(ocio_config_obj: OCIO.Config) -> Generator["Any", "Any", None]:
     """Retrieve the look names from the OCIO configuration object
-
-    :param ocioConfigObj: the ocio configuration object
-    :type ocioConfigObj: :class:`PyOpenColorIO.Config`
-
-    :return: the list of looks available
     """
     return (
-        lookName
-        for lookName
-        in ocioConfigObj.getLookNames()
+        look_name
+        for look_name
+        in ocio_config_obj.getLookNames()
     )
 
 
-def _getDisplaysList(ocioConfigObj):
+def _get_displays_list(ocio_config_obj: OCIO.Config) -> Generator["Any", "Any", None]:
     """Retrieve the display names from the OCIO configuration object
-
-    :param ocioConfigObj: the ocio configuration object
-    :type ocioConfigObj: :class:`PyOpenColorIO.Config`
-
-    :return: the list of displays available
     """
     return (
         display
         for display
-        in ocioConfigObj.getDisplays()
+        in ocio_config_obj.getDisplays()
     )
 
 
-def browseForOcioConfig(mainWindow, settings):
+def browse_for_ocio_config(mainWindow, settings):
     """Browse for ocio config, and saves settings
 
     :param mainWindow: the application main window
@@ -99,14 +86,14 @@ def browseForOcioConfig(mainWindow, settings):
     :param settings: the application settings
     :type settings: :class:`PySide2.QtCore.QSettings`
     """
-    ocioConfig = QFileDialog.getOpenFileName(
+    ocio_config = QFileDialog.getOpenFileName(
         caption="Select OCIO Configuration",
         filter="*.ocio")[0]
-    mainWindow.ocioCfgLineEdit.setText(ocioConfig)
-    saveSettings(settings, mainWindow)
+    mainWindow.ocioCfgLineEdit.setText(ocio_config)
+    save_settings(settings, mainWindow)
 
 
-def browseForLutOutputDir(mainWindow, settings):
+def browse_for_lut_output_dir(mainWindow, settings):
     """Browse for output directory, and saves settings
 
     :param mainWindow: the application main window
@@ -114,32 +101,32 @@ def browseForLutOutputDir(mainWindow, settings):
     :param settings: the application settings
     :type settings: :class:`PySide2.QtCore.QSettings`
     """
-    outputDir = QFileDialog.getExistingDirectory()
-    mainWindow.outputDirLineEdit.setText(outputDir)
-    checkToEnableBaking(mainWindow)
-    saveSettings(settings, mainWindow)
+    output_dir = QFileDialog.getExistingDirectory()
+    mainWindow.outputDirLineEdit.setText(output_dir)
+    check_to_enable_baking(mainWindow)
+    save_settings(settings, mainWindow)
 
 
-def checkToEnableBaking(mainWindow):
+def check_to_enable_baking(mainWindow):
     """Check if all command prerequesites are selected, to enable baking
 
     :param mainWindow: the application main window
     :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
     """
-    radioCheck = any(
+    radio_check = any(
         [
             bool(mainWindow.outputColorSpacesRadioButton.isChecked()),
             bool(mainWindow.looksRadioButton.isChecked())
         ]
     )
-    outputCheck = bool(mainWindow.outputDirLineEdit.text())
+    output_check = bool(mainWindow.outputDirLineEdit.text())
 
     mainWindow.processBakeLutPushButton.setEnabled(True) \
-        if all([radioCheck, outputCheck]) \
+        if all([radio_check, output_check]) \
         else mainWindow.processBakeLutPushButton.setDisabled(True)
 
 
-def initializeUIDefault(mainWindow):
+def initialize_ui_default(mainWindow):
     """Initialize default UI state
 
     :param mainWindow: the application main window
@@ -178,7 +165,7 @@ def initializeUIDefault(mainWindow):
     mainWindow.iccCopyrightCheckBox.setChecked(False)
 
 
-def initializeUIWithConfigData(mainWindow, ocioConfigObj):
+def initialize_ui_with_config_data(mainWindow, ocioConfigObj):
     """Initialize UI state when a config is loaded
 
     :param mainWindow: the application main window
@@ -190,11 +177,11 @@ def initializeUIWithConfigData(mainWindow, ocioConfigObj):
     mainWindow.outputColorSpacesRadioButton.setEnabled(True)
     mainWindow.looksRadioButton.setEnabled(True)
 
-    mainWindow.inputColorSpacesComboBox.addItems(_getColorSpaceNamesList(ocioConfigObj))
-    mainWindow.shaperColorSpacesComboBox.addItems(_getColorSpaceNamesList(ocioConfigObj))
-    mainWindow.outputColorSpacesComboBox.addItems(_getColorSpaceNamesList(ocioConfigObj))
-    mainWindow.looksComboBox.addItems(_getLookNamesList(ocioConfigObj))
-    mainWindow.iccDisplaysComboBox.addItems(_getDisplaysList(ocioConfigObj))
+    mainWindow.inputColorSpacesComboBox.addItems(_get_colorspaces_names_list(ocioConfigObj))
+    mainWindow.shaperColorSpacesComboBox.addItems(_get_colorspaces_names_list(ocioConfigObj))
+    mainWindow.outputColorSpacesComboBox.addItems(_get_colorspaces_names_list(ocioConfigObj))
+    mainWindow.looksComboBox.addItems(_get_looks_names_list(ocioConfigObj))
+    mainWindow.iccDisplaysComboBox.addItems(_get_displays_list(ocioConfigObj))
 
     mainWindow.cubeSizeComboBox.setCurrentIndex(32)
     mainWindow.shaperSizeComboBox.setCurrentIndex(32)
@@ -202,10 +189,10 @@ def initializeUIWithConfigData(mainWindow, ocioConfigObj):
     mainWindow.inputColorSpacesComboBox.setEnabled(True)
     mainWindow.outputColorSpacesRadioButton.setChecked(True)
 
-    checkToEnableBaking(mainWindow)
+    check_to_enable_baking(mainWindow)
 
 
-def generateLutFileName(mainWindow):
+def generate_lut_filename(mainWindow):
     """Generate the lut file name, use overriden name if available
 
     :param mainWindow: the application main window
@@ -215,22 +202,22 @@ def generateLutFileName(mainWindow):
     :rtype: str
     """
 
-    lutInfoMatch = re.match(LUT_INFO_REGEX, mainWindow.lutFormatComboBox.currentText())
-    lutExt = lutInfoMatch.group("lutExt")
-    outDir = mainWindow.outputDirLineEdit.text()
+    lut_info_match = re.match(LUT_INFO_REGEX, mainWindow.lutFormatComboBox.currentText())
+    lut_ext = lut_info_match.group("lut_ext")
+    output_dir = mainWindow.outputDirLineEdit.text()
 
-    lutRadical = (
+    lut_radical = (
         mainWindow.overrideLutNameLineEdit.text()
         if mainWindow.overrideLutNameCheckBox.isChecked() and mainWindow.overrideLutNameLineEdit.text()
-        else buildLutRadical(mainWindow)
+        else build_lut_radical(mainWindow)
     )
 
-    lutFileName = os.path.join(outDir, ".".join([lutRadical, lutExt]))
+    lut_filename = os.path.join(output_dir, ".".join([lut_radical, lut_ext]))
 
-    return lutFileName
+    return lut_filename
 
 
-def buildLutRadical(mainWindow):
+def build_lut_radical(mainWindow):
     """build and return the automagic lut radical
 
     :param mainWindow: the application main window
@@ -241,13 +228,13 @@ def buildLutRadical(mainWindow):
     """
     return "_to_".join(
         [
-            getColorSpaceInputPrefix(mainWindow),
-            getLutColorOutputSuffix(mainWindow)
+            get_colorspace_input_prefix(mainWindow),
+            get_lut_color_output_suffix(mainWindow)
         ]
     )
 
 
-def getColorSpaceInputPrefix(mainWindow):
+def get_colorspace_input_prefix(mainWindow):
     """build the lut radical colorspace input prefix from the UI
 
     :param mainWindow: the application main window
@@ -256,34 +243,33 @@ def getColorSpaceInputPrefix(mainWindow):
     :return: colorspace input prefix
     :rtype: str
     """
-    envPrefix = "".join(
+    env_prefix = "".join(
         [
-            "seq-{0}_".format(mainWindow.ocioSeqLineEdit.text())
+            f"seq-{mainWindow.ocioSeqLineEdit.text()}_"
             if mainWindow.ocioSeqLineEdit.text()
             else "",
-            "shot-{0}_".format(mainWindow.ocioShotLineEdit.text())
+            f"shot-{mainWindow.ocioShotLineEdit.text()}_"
             if mainWindow.ocioShotLineEdit.text()
             else "",
         ]
     )
 
-    inputPrefix = mainWindow.inputColorSpacesComboBox.currentText().replace(" ", "_")
+    input_prefix = mainWindow.inputColorSpacesComboBox.currentText().replace(" ", "_")
 
-    shaperPrefix = "_shaper-{0}".format(
-        mainWindow.shaperColorSpacesComboBox.currentText().replace(" ", "_")) \
+    shaper_prefix = f"_shaper-{mainWindow.shaperColorSpacesComboBox.currentText().replace(' ', '_')}"\
         if mainWindow.shaperColorSpacesCheckBox.isChecked() \
         else ""
 
     return "".join(
         [
-            envPrefix,
-            inputPrefix,
-            shaperPrefix
+            env_prefix,
+            input_prefix,
+            shaper_prefix
         ]
     )
 
 
-def getLutColorOutputSuffix(mainWindow):
+def get_lut_color_output_suffix(mainWindow):
     """build the lut radical colorspace output suffix from the UI
 
     :param mainWindow: the application main window
@@ -292,28 +278,26 @@ def getLutColorOutputSuffix(mainWindow):
     :return: colorspace output suffix
     :rtype: str
     """
-    outputSuffix = mainWindow.outputColorSpacesComboBox.currentText().replace(" ", "_") + "_"\
+    output_suffix = mainWindow.outputColorSpacesComboBox.currentText().replace(" ", "_") + "_"\
         if mainWindow.outputColorSpacesComboBox.currentText() \
         else mainWindow.looksComboBox.currentText().replace(" ", "_")
 
-    cubeSizeSuffix = "c{0}_".format(
-        mainWindow.cubeSizeComboBox.currentText()) \
+    cube_size_suffix = f"c{mainWindow.cubeSizeComboBox.currentText()}_"\
         if mainWindow.cubeSizeCheckBox.checkState() \
         else ""
 
-    shaperSizeSuffix = "s{0}_".format(
-        mainWindow.shaperSizeComboBox.currentText()) \
+    shaper_size_suffix = f"s{mainWindow.shaperSizeComboBox.currentText()}_"\
         if mainWindow.shaperSizeCheckBox.checkState() \
         else ""
 
-    iccOnlySuffix = ""
+    icc_only_suffix = ""
     if mainWindow.lutFormatComboBox.currentText() == "icc (.icc)":
-        iccOnlySuffix = "".join(
+        icc_only_suffix = "".join(
             [
-                "D{0}_".format(mainWindow.iccWhitePointLineEdit.text())
+                f"D{mainWindow.iccWhitePointLineEdit.text()}_"
                 if mainWindow.iccWhitePointCheckBox.isChecked()
                 else "",
-                "displayICC-{0}_".format(mainWindow.iccDisplaysComboBox.currentText().replace(" ", "_"))
+                f"displayICC-{mainWindow.iccDisplaysComboBox.currentText().replace(' ', '_')}_"
                 if mainWindow.iccDisplaysCheckBox.isChecked()
                 else ""
             ]
@@ -321,15 +305,15 @@ def getLutColorOutputSuffix(mainWindow):
 
     return "".join(
         [
-            outputSuffix,
-            cubeSizeSuffix,
-            shaperSizeSuffix,
-            iccOnlySuffix,
+            output_suffix,
+            cube_size_suffix,
+            shaper_size_suffix,
+            icc_only_suffix,
         ]
     ).rstrip("_")
 
 
-def getBakeCmdData(mainWindow):
+def get_bake_cmd_data(mainWindow):
     """From the mainWindow, get all the data needed to build an ociobakelut command
 
     :param mainWindow: the application main window
@@ -338,122 +322,108 @@ def getBakeCmdData(mainWindow):
     :return: the data needed to build the command
     :rtype: dict
     """
-    ocioConfig = mainWindow.ocioCfgLineEdit.text()
-    inputSpace = mainWindow.inputColorSpacesComboBox.currentText()
-    shaperSpace = mainWindow.shaperColorSpacesComboBox.currentText()
-    outputSpace = mainWindow.outputColorSpacesComboBox.currentText()
+    ocio_config = mainWindow.ocioCfgLineEdit.text()
+    input_space = mainWindow.inputColorSpacesComboBox.currentText()
+    shaper_space = mainWindow.shaperColorSpacesComboBox.currentText()
+    output_space = mainWindow.outputColorSpacesComboBox.currentText()
     looks = mainWindow.looksComboBox.currentText()
-    cubeSize = mainWindow.cubeSizeComboBox.currentText()
-    shaperSize = mainWindow.shaperSizeComboBox.currentText()
-    iccWhitePoint = mainWindow.iccWhitePointLineEdit.text()
-    iccDisplays = mainWindow.iccDisplaysComboBox.currentText()
-    iccDescription = mainWindow.iccDescriptionLineEdit.text()
-    iccCopyright = mainWindow.iccCopyrightLineEdit.text()
+    cube_size = mainWindow.cubeSizeComboBox.currentText()
+    shaper_size = mainWindow.shaperSizeComboBox.currentText()
+    icc_white_point = mainWindow.iccWhitePointLineEdit.text()
+    icc_displays = mainWindow.iccDisplaysComboBox.currentText()
+    icc_description = mainWindow.iccDescriptionLineEdit.text()
+    icc_copyright = mainWindow.iccCopyrightLineEdit.text()
 
-    lutInfoMatch = re.match(LUT_INFO_REGEX, mainWindow.lutFormatComboBox.currentText())
-    lutFormat = lutInfoMatch.group("lutFormat")
-    lutExt = lutInfoMatch.group("lutExt")
+    lut_info_match = re.match(LUT_INFO_REGEX, mainWindow.lutFormatComboBox.currentText())
+    lut_format = lut_info_match.group("lut_format")
+    lut_ext = lut_info_match.group("lut_ext")
 
-    bakeCmdData = {
-        "iconfig": ["--iconfig", ocioConfig],
-        "inputSpace": ["--inputspace", inputSpace],
-        "lutFormat": ["--format", lutFormat],
-        "lutExt": lutExt,
+    bake_cmd_data = {
+        "ocio_config": ["--iconfig", ocio_config],
+        "input_space": ["--inputspace", input_space],
+        "lut_format": ["--format", lut_format],
+        "lut_ext": lut_ext,
     }
 
     if mainWindow.shaperColorSpacesCheckBox.checkState():
-        bakeCmdData["shaperSpace"] = ["--shaperspace", shaperSpace]
+        bake_cmd_data["shaper_space"] = ["--shaperspace", shaper_space]
     if mainWindow.outputColorSpacesRadioButton.isChecked():
-        bakeCmdData["outputSpace"] = ["--outputspace", outputSpace]
+        bake_cmd_data["output_space"] = ["--outputspace", output_space]
     if mainWindow.looksRadioButton.isChecked():
-        bakeCmdData["looks"] = ["--looks", looks]
+        bake_cmd_data["looks"] = ["--looks", looks]
     if mainWindow.cubeSizeCheckBox.checkState():
-        bakeCmdData["cubeSize"] = ["--cubesize", cubeSize]
+        bake_cmd_data["cube_size"] = ["--cubesize", cube_size]
     if mainWindow.shaperSizeCheckBox.checkState():
-        bakeCmdData["shaperSize"] = ["--shapersize", shaperSize]
+        bake_cmd_data["shaper_size"] = ["--shapersize", shaper_size]
 
-    if lutFormat == "icc":
+    if lut_format == "icc":
         if mainWindow.iccWhitePointCheckBox.checkState():
-            bakeCmdData["iccWhitePoint"] = ["--whitepoint", iccWhitePoint]
+            bake_cmd_data["icc_white_point"] = ["--whitepoint", icc_white_point]
         if mainWindow.iccDisplaysCheckBox.checkState():
-            bakeCmdData["iccDisplays"] = ["--displayicc", iccDisplays]
+            bake_cmd_data["icc_displays"] = ["--displayicc", icc_displays]
         if mainWindow.iccDescriptionCheckBox.checkState():
-            bakeCmdData["iccDescription"] = ["--description", iccDescription]
+            bake_cmd_data["icc_description"] = ["--description", icc_description]
         if mainWindow.iccCopyrightCheckBox.checkState():
-            bakeCmdData["iccCopyright"] = ["--copyright", iccCopyright]
+            bake_cmd_data["icc_copyright"] = ["--copyright", icc_copyright]
 
-    bakeCmdData["lutFileName"] = generateLutFileName(mainWindow)
+    bake_cmd_data["lut_filename"] = generate_lut_filename(mainWindow)
 
-    return bakeCmdData
+    return bake_cmd_data
 
 
-def getOcioBakeLutCmd(bakeCmdData):
+def get_ociobakelut_cmd(bake_cmd_data):
     """Build a valid ociobakelut command
 
-    :param dict bakeCmdData: the data needed to build the ociobakelut command
+    :param dict bake_cmd_data: the data needed to build the ociobakelut command
 
     :return: the ociobakelut command to be executed
     :rtype: list
     """
     cmd = ["ociobakelut"]
-    cmd.extend(bakeCmdData["iconfig"])
-    cmd.extend(bakeCmdData["inputSpace"])
-    cmd.extend(bakeCmdData.get("shaperSpace", ""))
-    cmd.extend(bakeCmdData.get("outputSpace", bakeCmdData.get("looks")))
-    cmd.extend(bakeCmdData["lutFormat"])
-    cmd.extend(bakeCmdData.get("cubeSize", ""))
-    cmd.extend(bakeCmdData.get("shaperSize", ""))
+    cmd.extend(bake_cmd_data["ocio_config"])
+    cmd.extend(bake_cmd_data["input_space"])
+    cmd.extend(bake_cmd_data.get("shaper_space", ""))
+    cmd.extend(bake_cmd_data.get("output_space", bake_cmd_data.get("looks")))
+    cmd.extend(bake_cmd_data["lut_format"])
+    cmd.extend(bake_cmd_data.get("cube_size", ""))
+    cmd.extend(bake_cmd_data.get("shaper_size", ""))
 
-    if bakeCmdData["lutFormat"] == "icc":
-        cmd.extend(bakeCmdData.get("iccWhitePoint", ""))
-        cmd.extend(bakeCmdData.get("iccDisplays", ""))
-        cmd.extend(bakeCmdData.get("iccDescription", ""))
-        cmd.extend(bakeCmdData.get("iccCopyright", ""))
+    if bake_cmd_data["lut_format"] == "icc":
+        cmd.extend(bake_cmd_data.get("icc_white_point", ""))
+        cmd.extend(bake_cmd_data.get("icc_displays", ""))
+        cmd.extend(bake_cmd_data.get("icc_description", ""))
+        cmd.extend(bake_cmd_data.get("icc_copyright", ""))
 
-    cmd.append(bakeCmdData["lutFileName"])
+    cmd.append(bake_cmd_data["lut_filename"])
 
     return cmd
 
 
-def ocioReport(bakeCmdData, ocioBakeLutCmd):
+def ocio_report(bake_cmd_data, ociobakelut_cmd):
     """Basic report of the ociobakelut command
 
-    :param dict bakeCmdData: data used to make the command
-    :param list ocioBakeLutCmd: executed command
+    :param dict bake_cmd_data: data used to make the command
+    :param list ociobakelut_cmd: executed command
 
     :return: the log to be append to textEdit
     :rtype: str
     """
-    return (
-        "--------- LUT prescription below -----------\n"
-        "\n"
-        "OCIO: {0}\n"
-        "SEQ: {1}\n"
-        "SHOT: {2}\n"
-        "Input ColorSpace: {3}\n"
-        "Shaper ColorSpace: {4}\n"
-        "Output ColorSpace: {5}\n"
-        "Look: {6}\n"
-        "\n"
-        "LUT Location: {7}\n"
-        "\n"
-        "Executed BakeLut Command: {8}\n"
-        "\n"
-        "--------------------------------------------".format(
-            bakeCmdData["iconfig"][1],
-            os.environ.get("SEQ", "N/A"),
-            os.environ.get("SHOT", "N/A"),
-            bakeCmdData["inputSpace"][1],
-            bakeCmdData.get("shaperSpace", ["", "N/A"])[1],
-            bakeCmdData.get("outputSpace", ["", "N/A"])[1],
-            bakeCmdData.get("looks", ["", "N/A"])[1],
-            bakeCmdData["lutFileName"],
-            " ".join(ocioBakeLutCmd),
-        )
-    )
+    return f"""--------- LUT prescription below -----------
+OCIO: {bake_cmd_data['ocio_config'][1]}
+SEQ: {os.environ.get('SEQ', 'N/A')}
+SHOT: {os.environ.get('SHOT', 'N/A')}
+Input ColorSpace: {bake_cmd_data['input_space'][1]}
+Shaper ColorSpace: {bake_cmd_data.get('shaper_space', ['', 'N/A'])[1]}
+Output ColorSpace: {bake_cmd_data.get('output_space', ['', 'N/A'])[1]}
+Look: {bake_cmd_data.get('looks', ['', 'N/A'])[1]}
+
+LUT Location: {bake_cmd_data['lut_filename']}
+
+Executed command: {' '.join(ociobakelut_cmd)}
+--------------------------------------------"""
 
 
-def settingsClear(app, settings, mainWindow):
+def settings_clear(app, settings, mainWindow):
     """Sets default Sytle/clear all the settings/restore default appearance
 
     :param app: the application
@@ -463,12 +433,12 @@ def settingsClear(app, settings, mainWindow):
     :param mainWindow: the application main window
     :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
     """
-    setSystemStyle(app, settings)
-    initializeUIDefault(mainWindow)
+    set_system_style(app, settings)
+    initialize_ui_default(mainWindow)
     settings.clear()
 
 
-def saveStyleSettings(settings, style=None):
+def save_style_settings(settings, style=None):
     """save only the style setting
 
     :param settings: the application settings
@@ -479,7 +449,7 @@ def saveStyleSettings(settings, style=None):
     settings.sync()
 
 
-def saveSettings(settings, mainWindow):
+def save_settings(settings, mainWindow):
     """save settings
 
     :param settings: the application settings
@@ -487,23 +457,23 @@ def saveSettings(settings, mainWindow):
     :param mainWindow: the application main window
     :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
     """
-    settings.setValue("ocio/configPath", mainWindow.ocioCfgLineEdit.text())
+    settings.setValue("ocio/config_path", mainWindow.ocioCfgLineEdit.text())
     settings.setValue("colorspaces/input", mainWindow.inputColorSpacesComboBox.currentText())
     settings.setValue("colorspaces/shaper", mainWindow.shaperColorSpacesComboBox.currentText())
     settings.setValue("colorspaces/output", mainWindow.outputColorSpacesComboBox.currentText())
     settings.setValue("colorspaces/looks", mainWindow.looksComboBox.currentText())
     settings.setValue("output/directory", mainWindow.outputDirLineEdit.text())
-    settings.setValue("baking/lutFormat", mainWindow.lutFormatComboBox.currentText())
-    settings.setValue("baking/cubeSize", mainWindow.cubeSizeComboBox.currentText())
-    settings.setValue("baking/shaperSize", mainWindow.shaperSizeComboBox.currentText())
-    settings.setValue("icc/whitePoint", mainWindow.iccWhitePointLineEdit.text())
+    settings.setValue("baking/lut_format", mainWindow.lutFormatComboBox.currentText())
+    settings.setValue("baking/cube_size", mainWindow.cubeSizeComboBox.currentText())
+    settings.setValue("baking/shaper_size", mainWindow.shaperSizeComboBox.currentText())
+    settings.setValue("icc/white_point", mainWindow.iccWhitePointLineEdit.text())
     settings.setValue("icc/displays", mainWindow.iccDisplaysComboBox.currentText())
     settings.setValue("icc/description", mainWindow.iccDescriptionLineEdit.text())
     settings.setValue("icc/copyright", mainWindow.iccCopyrightLineEdit.text())
     settings.sync()
 
 
-def loadSettings(app, settings, mainWindow):
+def load_settings(app, settings, mainWindow):
     """load applications settings
 
     :param app: the application
@@ -513,88 +483,54 @@ def loadSettings(app, settings, mainWindow):
     :param mainWindow: the application main window
     :type mainWindow: :class:`PySide2.QtWidgets.QMainWindow`
     """
+    combo_box_settings = {
+        mainWindow.inputColorSpacesComboBox: "colorspaces/input",
+        mainWindow.shaperColorSpacesComboBox: "colorspaces/shaper",
+        mainWindow.outputColorSpacesComboBox: "colorspaces/output",
+        mainWindow.looksComboBox: "colorspaces/looks",
+        mainWindow.lutFormatComboBox: "baking/lut_format",
+        mainWindow.cubeSizeComboBox: "baking/cube_size",
+        mainWindow.shaperSizeComboBox: "baking/shaper_size",
+        mainWindow.iccDisplaysComboBox: "icc/displays",
+    }
+    line_edit_settings = {
+        mainWindow.iccWhitePointLineEdit: "icc/white_point",
+        mainWindow.iccDescriptionLineEdit: "icc/description",
+        mainWindow.iccCopyrightLineEdit: "icc/copyright",
+        mainWindow.outputDirLineEdit: "output/directory"
+    }
+
     if settings.value("misc/style") == "dark":
-        setDarkStyle(app, settings)
+        set_dark_style(app, settings)
 
-    ocioConfigPath = settings.value("ocio/configPath")
-    if not ocioConfigPath:
-        initializeUIDefault(mainWindow)
+    ocio_config_path = settings.value("ocio/config_path")
+    if not ocio_config_path:
+        initialize_ui_default(mainWindow)
     else:
-        mainWindow.ocioCfgLineEdit.setText(ocioConfigPath)
-        ocioConfigObj = OCIO.Config.CreateFromFile(ocioConfigPath)
+        mainWindow.ocioCfgLineEdit.setText(ocio_config_path)
+        ocio_config_obj = OCIO.Config.CreateFromFile(ocio_config_path)
 
-        if ocioConfigObj:
-            initializeUIWithConfigData(mainWindow, ocioConfigObj)
-
-            index = mainWindow.inputColorSpacesComboBox.findText(
-                settings.value("colorspaces/input"), Qt.MatchFixedString
-            )
-            if index >= 0:
-                mainWindow.inputColorSpacesComboBox.setCurrentIndex(index)
-
-            index = mainWindow.shaperColorSpacesComboBox.findText(
-                settings.value("colorspaces/shaper"), Qt.MatchFixedString
-            )
-            if index >= 0:
-                mainWindow.shaperColorSpacesComboBox.setCurrentIndex(index)
-
-            index = mainWindow.outputColorSpacesComboBox.findText(
-                settings.value("colorspaces/output"), Qt.MatchFixedString
-            )
-            if index >= 0:
-                mainWindow.outputColorSpacesComboBox.setCurrentIndex(index)
-
-            index = mainWindow.looksComboBox.findText(
-                settings.value("colorspaces/looks"), Qt.MatchFixedString
-            )
-            if index >= 0:
-                mainWindow.looksComboBox.setCurrentIndex(index)
-
-            mainWindow.outputDirLineEdit.setText(settings.value("output/directory"))
-
-            index = mainWindow.lutFormatComboBox.findText(
-                settings.value("baking/lutFormat"), Qt.MatchFixedString
-            )
-            if index >= 0:
-                mainWindow.lutFormatComboBox.setCurrentIndex(index)
+        if ocio_config_obj:
+            initialize_ui_with_config_data(mainWindow, ocio_config_obj)
 
             mainWindow.cubeSizeComboBox.addItems(SIZES_LIST)
-
-            index = mainWindow.cubeSizeComboBox.findText(
-                settings.value("baking/cubeSize"), Qt.MatchFixedString
-            )
-            if index >= 0:
-                mainWindow.cubeSizeComboBox.setCurrentIndex(index)
-
             mainWindow.cubeSizeComboBox.setDisabled(True)
-
             mainWindow.shaperSizeComboBox.addItems(SIZES_LIST)
-
-            index = mainWindow.shaperSizeComboBox.findText(
-                settings.value("baking/shaperSize"), Qt.MatchFixedString
-            )
-            if index >= 0:
-                mainWindow.shaperSizeComboBox.setCurrentIndex(index)
             mainWindow.shaperSizeComboBox.setDisabled(True)
 
-            mainWindow.iccWhitePointLineEdit.setText(settings.value("icc/whitePoint"))
+            for widget, combobox_setting in combo_box_settings.items():
+                index = widget.findText(settings.value(combobox_setting), Qt.MatchFixedString)
+                if index >= 0:
+                    widget.setCurrentIndex(index)
 
-            index = mainWindow.iccDisplaysComboBox.findText(
-                settings.value("icc/displays"), Qt.MatchFixedString
-            )
-            if index >= 0:
-                mainWindow.iccDisplaysComboBox.setCurrentIndex(index)
+            for widget, lineedit_setting in line_edit_settings.items():
+                widget.setText(settings.value(lineedit_setting))
 
-            mainWindow.iccDescriptionLineEdit.setText(settings.value("icc/description"))
-
-            mainWindow.iccCopyrightLineEdit.setText(settings.value("icc/copyright"))
-            mainWindow.outputDirLineEdit.setText(settings.value("output/directory"))
-
-            checkForICC(mainWindow, mainWindow.lutFormatComboBox.currentText())
-            checkToEnableBaking(mainWindow)
+            check_for_icc(mainWindow, mainWindow.lutFormatComboBox.currentText())
+            check_to_enable_baking(mainWindow)
 
 
-def checkForICC(mainWindow, lutFormatComboBoxText):
+def check_for_icc(mainWindow, lutFormatComboBoxText):
     """Enable ICC Options is icc format is selected
 
     :param mainWindow: the application main window
@@ -631,7 +567,7 @@ def checkForICC(mainWindow, lutFormatComboBoxText):
         mainWindow.iccCopyrightLineEdit.setDisabled(True)
 
 
-def setDarkStyle(app, settings):
+def set_dark_style(app, settings):
     """Sets custom dark style, and save
 
     :param app: the application
@@ -655,10 +591,10 @@ def setDarkStyle(app, settings):
     palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
     palette.setColor(QPalette.HighlightedText, Qt.black)
     app.setPalette(palette)
-    saveStyleSettings(settings, style="dark")
+    save_style_settings(settings, style="dark")
 
 
-def setSystemStyle(app, settings):
+def set_system_style(app, settings):
     """Sets back the default system style, and save
 
     :param app: the application
@@ -668,7 +604,7 @@ def setSystemStyle(app, settings):
     """
     palette = QPalette()
     app.setPalette(palette)
-    saveStyleSettings(settings, style="system")
+    save_style_settings(settings, style="system")
 
 
 def main():
@@ -677,9 +613,9 @@ def main():
     # Adds Ctrl+C support to kill app
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    envOCIO = os.environ.get("OCIO")
-    envSEQ = os.environ.get("SEQ")
-    envSHOT = os.environ.get("SHOT")
+    env_ocio = os.environ.get("OCIO")
+    env_sequence = os.environ.get("SEQ")
+    env_shot = os.environ.get("SHOT")
 
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 
@@ -693,133 +629,133 @@ def main():
     mainWindow.iccWhitePointLineEdit.setValidator(QIntValidator(1, 10000))
 
     settings = QSettings()
-    if envOCIO:
-        mainWindow.ocioCfgLineEdit.setText(envOCIO)
-        mainWindow.ocioSeqLineEdit.setText(envSEQ)
-        mainWindow.ocioShotLineEdit.setText(envSHOT)
-        _loadOCIOConfig(mainWindow, settings)
+    if env_ocio:
+        mainWindow.ocioCfgLineEdit.setText(env_ocio)
+        mainWindow.ocioSeqLineEdit.setText(env_sequence)
+        mainWindow.ocioShotLineEdit.setText(env_shot)
+        _load_ocio_config(mainWindow, settings)
     else:
-        loadSettings(app, settings, mainWindow)
+        load_settings(app, settings, mainWindow)
 
     @contextmanager
-    def ocioContext():
+    def ocio_context():
         """Keep current ocio context in memory, in case values are overriden in the UI
         """
-        seqContext = mainWindow.ocioSeqLineEdit.text()
-        shotContext = mainWindow.ocioShotLineEdit.text()
+        sequence_context = mainWindow.ocioSeqLineEdit.text()
+        shot_context = mainWindow.ocioShotLineEdit.text()
 
-        if seqContext:
-            os.environ["SEQ"] = seqContext
+        if sequence_context:
+            os.environ["SEQ"] = sequence_context
 
-        if shotContext:
-            os.environ["SHOT"] = shotContext
+        if shot_context:
+            os.environ["SHOT"] = shot_context
 
         yield
 
-        if seqContext:
-            if envSEQ is None:
+        if sequence_context:
+            if env_sequence is None:
                 del os.environ["SEQ"]
             else:
-                os.environ["SEQ"] = envSEQ
+                os.environ["SEQ"] = env_sequence
 
-        if shotContext:
-            if envSHOT is None:
+        if shot_context:
+            if env_shot is None:
                 del os.environ["SHOT"]
             else:
-                os.environ["SHOT"] = envSHOT
+                os.environ["SHOT"] = env_shot
 
-    def withOCIOContext():
+    def with_ocio_context():
         """decorator which allows running functions in an ocio context
         """
         def decorator(func):
             @wraps(func)
             def wrapper(*args, **kwargs):
-                with ocioContext():
+                with ocio_context():
                     return func(*args, **kwargs)
             return wrapper
         return decorator
 
-    @withOCIOContext()
-    def processBakeLut():
+    @with_ocio_context()
+    def process_bake_lut():
         """from the UI, generate a valid ociobakelut command, and execute it
         """
-        bakeCmdData = getBakeCmdData(mainWindow)
-        lutResultFile = bakeCmdData["lutFileName"]
-        ocioBakeLutCmd = getOcioBakeLutCmd(bakeCmdData)
+        bake_cmd_data = get_bake_cmd_data(mainWindow)
+        lut_result_file = bake_cmd_data["lut_filename"]
+        ociobakelut_cmd = get_ociobakelut_cmd(bake_cmd_data)
 
-        process = subprocess.Popen(ocioBakeLutCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(ociobakelut_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
 
         if process.returncode:
             mainWindow.resultLineEdit.setText("Error")
             mainWindow.resultLogTextEdit.setText(stderr.decode("utf-8"))
-            print(" ".join(ocioBakeLutCmd))
+            print(" ".join(ociobakelut_cmd))
         else:
-            mainWindow.resultLineEdit.setText(lutResultFile)
-            stringedLog = ocioReport(bakeCmdData, ocioBakeLutCmd)
+            mainWindow.resultLineEdit.setText(lut_result_file)
+            stringedLog = ocio_report(bake_cmd_data, ociobakelut_cmd)
             mainWindow.resultLogTextEdit.setText(stringedLog)
 
     mainWindow.ocioCfgLoadPushButton.clicked.connect(
-        lambda x: browseForOcioConfig(mainWindow, settings)
+        lambda x: browse_for_ocio_config(mainWindow, settings)
     )
     mainWindow.outputDirBrowsePushButton.clicked.connect(
-        lambda x: browseForLutOutputDir(mainWindow, settings)
+        lambda x: browse_for_lut_output_dir(mainWindow, settings)
     )
     mainWindow.ocioCfgLineEdit.textChanged.connect(
-        lambda x: _loadOCIOConfig(mainWindow, settings)
+        lambda x: _load_ocio_config(mainWindow, settings)
     )
     mainWindow.outputDirLineEdit.textChanged.connect(
-        lambda x: checkToEnableBaking(mainWindow)
+        lambda x: check_to_enable_baking(mainWindow)
     )
     mainWindow.outputDirLineEdit.textChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.inputColorSpacesComboBox.currentIndexChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.outputColorSpacesComboBox.currentIndexChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.shaperColorSpacesComboBox.currentIndexChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.looksComboBox.currentIndexChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.lutFormatComboBox.currentIndexChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.lutFormatComboBox.currentIndexChanged.connect(
-        lambda x: checkForICC(mainWindow, mainWindow.lutFormatComboBox.currentText())
+        lambda x: check_for_icc(mainWindow, mainWindow.lutFormatComboBox.currentText())
     )
     mainWindow.cubeSizeComboBox.currentIndexChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.shaperSizeComboBox.currentIndexChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.iccWhitePointLineEdit.textChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.iccDisplaysComboBox.currentIndexChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.iccDescriptionLineEdit.textChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.iccCopyrightLineEdit.textChanged.connect(
-        lambda x: saveSettings(settings, mainWindow)
+        lambda x: save_settings(settings, mainWindow)
     )
     mainWindow.actionSetDarkStyle.triggered.connect(
-        lambda x: setDarkStyle(app, settings)
+        lambda x: set_dark_style(app, settings)
     )
     mainWindow.actionSetSystemStyle.triggered.connect(
-        lambda x: setSystemStyle(app, settings)
+        lambda x: set_system_style(app, settings)
     )
     mainWindow.actionSettingsClear.triggered.connect(
-        lambda x: settingsClear(app, settings, mainWindow)
+        lambda x: settings_clear(app, settings, mainWindow)
     )
-    mainWindow.processBakeLutPushButton.clicked.connect(processBakeLut)
+    mainWindow.processBakeLutPushButton.clicked.connect(process_bake_lut)
 
     mainWindow.show()
     sys.exit(app.exec_())
