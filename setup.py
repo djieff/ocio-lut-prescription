@@ -14,11 +14,15 @@ setup(
     author_email='bouchard.jfrancois@gmail.com',
     python_requires='>=3.8',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
+        'Development Status :: 2 - Pre - Alpha'
+        'Intended Audience :: End Users/Desktop',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.8',
+        'Topic :: Artistic Software',
+        'Topic :: Multimedia :: Graphics :: Graphics Conversion',
+        'Topic :: Multimedia :: Video :: Conversion',
+        'Topic :: Scientific/Engineering :: Image Processing',
     ],
     description="GUI wrapper of ociobakelut command.",
     entry_points={
