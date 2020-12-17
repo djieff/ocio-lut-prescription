@@ -21,12 +21,21 @@ def load_ocio_config(mainWindow: QMainWindow, settings: QSettings):
     if ocio_config_path:
         ocio_config_obj = ocio.create_ocio_config_object(ocio_config_path)
 
-        colorspaces_generator = ocio.get_colorspaces_names_list(ocio_config_obj)
+        input_colorspaces_generator = ocio.get_colorspaces_names_list(ocio_config_obj)
+        shaper_colorspaces_generator = ocio.get_colorspaces_names_list(ocio_config_obj)
+        output_colorspaces_generator = ocio.get_colorspaces_names_list(ocio_config_obj)
         looks_generator = ocio.get_looks_names_list(ocio_config_obj)
         displays_generator = ocio.get_displays_list(ocio_config_obj)
 
         if ocio_config_obj:
-            initialize_ui_with_config_data(mainWindow, colorspaces_generator, looks_generator, displays_generator)
+            initialize_ui_with_config_data(
+                mainWindow,
+                input_colorspaces_generator,
+                shaper_colorspaces_generator,
+                output_colorspaces_generator,
+                looks_generator,
+                displays_generator
+            )
             save_settings(settings, mainWindow)
 
 
@@ -100,6 +109,7 @@ def load_settings(app: QApplication, settings: QSettings, mainWindow: QMainWindo
             output_colorspaces_generator = ocio.get_colorspaces_names_list(ocio_config_obj)
             looks_generator = ocio.get_looks_names_list(ocio_config_obj)
             displays_generator = ocio.get_displays_list(ocio_config_obj)
+
             initialize_ui_with_config_data(
                 mainWindow,
                 input_colorspaces_generator,
