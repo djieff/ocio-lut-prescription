@@ -1,4 +1,2 @@
-include ocioLutPrescription/ocioLutPrescription_icon.png
-include ocioLutPrescription/ocioLutPrescription_mainWindow.ui
-include ocioLutPrescription/ocioLutPrescription_qrc.py
-include ocioLutPrescription/resource.qrc
+include ocioLutPrescription/olp_modules
+include ocioLutPrescription/ui_files
