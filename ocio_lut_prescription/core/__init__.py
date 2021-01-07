@@ -14,7 +14,7 @@ def get_ociobakelut_cmd(bake_cmd_data: dict) -> list:
     cmd.extend(bake_cmd_data.get("cube_size", ""))
     cmd.extend(bake_cmd_data.get("shaper_size", ""))
 
-    if bake_cmd_data["lut_format"] == "icc":
+    if bake_cmd_data["lut_ext"] == "icc":
         cmd.extend(bake_cmd_data.get("icc_white_point", ""))
         cmd.extend(bake_cmd_data.get("icc_displays", ""))
         cmd.extend(bake_cmd_data.get("icc_description", ""))

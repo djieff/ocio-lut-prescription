@@ -449,7 +449,7 @@ def get_bake_cmd_data(main_window: QMainWindow) -> dict:
     if main_window.shaperSizeCheckBox.checkState():
         bake_cmd_data["shaper_size"] = ["--shapersize", shaper_size]
 
-    if lut_format == "icc":
+    if lut_ext == "icc":
         if main_window.iccWhitePointCheckBox.checkState():
             bake_cmd_data["icc_white_point"] = ["--whitepoint", icc_white_point]
         if main_window.iccDisplaysCheckBox.checkState():
