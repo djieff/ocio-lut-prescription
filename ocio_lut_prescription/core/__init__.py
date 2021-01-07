@@ -1,10 +1,11 @@
+"""module containing core functions
+"""
 import os
 
 
 def get_ociobakelut_cmd(bake_cmd_data: dict) -> list:
-    """
-    """
-    cmd = ["ociobakelut"]
+    """"""
+    cmd = [bake_cmd_data["ociobakelut_binary"]]
     cmd.extend(bake_cmd_data["ocio_config"])
     cmd.extend(bake_cmd_data["input_space"])
     cmd.extend(bake_cmd_data.get("shaper_space", ""))
@@ -25,8 +26,7 @@ def get_ociobakelut_cmd(bake_cmd_data: dict) -> list:
 
 
 def ocio_report(bake_cmd_data: dict, ociobakelut_cmd: list) -> str:
-    """
-    """
+    """"""
     return f"""--------- LUT prescription below -----------
 OCIO: {bake_cmd_data['ocio_config'][1]}
 SEQ: {os.environ.get('SEQ', 'N/A')}

@@ -1,15 +1,16 @@
-# ocioLutPrescription
+# ocio_lut_prescription
 
 ---
 
 ## Summary
-ocioLutPrescription is a gui tool used to wrap the ociobakelut command
+ocio_lut_prescription is a gui tool used to wrap the ociobakelut command
 
 ---
 
 ## UI Overview
 
 Note: If you are already familiar with ociobakelut, the ui should be fairly simple to figure out.
+
 ![](.docs/fullUI.png)
 
 ## Generate a LUT, step by step
@@ -44,14 +45,26 @@ Note: If you are already familiar with ociobakelut, the ui should be fairly simp
 ---
 
 ## install
-`pip install ocioLutPrescription`
+`pip install ocio_lut_prescription`
+
+
+## Environment setup example (in a linux .bashrc)
+```
+# OCIO
+export PYTHONPATH="${PYTHONPATH}:/path/to/compiled/ocio/lib/python3.8/site-packages"
+export LD_LIBRARY_PATH="/path/to/compiled/ocio/lib:$LD_LIBRARY_PATH"
+export PATH="/path/to/compiled/ocio/bin:$PATH"
+```
 
 ---
 
 ## execute
-`ocioLutPrescription` (in Terminal)
+`ocio_lut_prescription` (in Terminal)
 
 ---
+
+## tests
+`tox` (in terminal) will run tests/pylint/black on the repo
 
 ## Release history
 
@@ -72,4 +85,3 @@ v1.0.0: initial release
 I'm not a doctor, those ain't real prescriptions.
 
 ---
-

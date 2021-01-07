@@ -1,2 +1,1 @@
-include ocioLutPrescription/olp_modules
-include ocioLutPrescription/ui_files
+include ocio_lut_prescription
