@@ -1,4 +1,3 @@
-# pylint: disable=no-name-in-module
 """UI Wrapper script over the "ociobakelut" command
 
 Icon Copyright:

@@ -1,4 +1,4 @@
-# pylint: disable=expression-not-assigned, too-many-arguments, too-many-locals, no-name-in-module
+# pylint: disable=too-many-arguments, too-many-locals
 """ui related submodule of the core module"""
 import os
 import re
@@ -15,7 +15,6 @@ SIZES_LIST = [str(x) for x in range(1, 67)]
 
 
 def load_ocio_config(main_window: QMainWindow, settings: QSettings):
-    """"""
     ocio_config_path = main_window.ocioCfgLineEdit.text()
 
     if ocio_config_path:
@@ -40,20 +39,17 @@ def load_ocio_config(main_window: QMainWindow, settings: QSettings):
 
 
 def settings_clear(app: QApplication, settings: QSettings, main_window: QMainWindow):
-    """"""
     set_system_style(app, settings)
     initialize_ui_default(main_window)
     settings.clear()
 
 
 def save_style_settings(settings: QSettings, style=None):
-    """"""
     settings.setValue("misc/style", style)
     settings.sync()
 
 
 def save_settings(settings: QSettings, main_window: QMainWindow):
-    """"""
     settings.setValue("ocio/config_path", main_window.ocioCfgLineEdit.text())
     settings.setValue(
         "colorspaces/input", main_window.inputColorSpacesComboBox.currentText()
@@ -79,7 +75,6 @@ def save_settings(settings: QSettings, main_window: QMainWindow):
 
 
 def load_settings(app: QApplication, settings: QSettings, main_window: QMainWindow):
-    """"""
     combo_box_settings = {
         main_window.inputColorSpacesComboBox: "colorspaces/input",
         main_window.shaperColorSpacesComboBox: "colorspaces/shaper",
@@ -120,7 +115,6 @@ def initialize_ui(
     line_edit_settings: dict,
     ocio_config_path: str,
 ):
-    """"""
     main_window.ocioCfgLineEdit.setText(ocio_config_path)
     ocio_config_obj = ocio.create_ocio_config_object(ocio_config_path)
     if ocio_config_obj:
@@ -191,7 +185,6 @@ def check_for_icc(main_window: QMainWindow, lut_format_combobox_text: str):
 
 
 def set_dark_style(app: QApplication, settings: QSettings):
-    """"""
     app.setStyle("Fusion")
     palette = QPalette()
     palette.setColor(QPalette.Window, QColor(53, 53, 53))
@@ -212,14 +205,12 @@ def set_dark_style(app: QApplication, settings: QSettings):
 
 
 def set_system_style(app: QApplication, settings: QSettings):
-    """"""
     palette = QPalette()
     app.setPalette(palette)
     save_style_settings(settings, style="system")
 
 
 def browse_for_ocio_config(main_window: QMainWindow, settings: QSettings):
-    """"""
     ocio_config = QFileDialog.getOpenFileName(
         caption="Select OCIO Configuration", filter="*.ocio"
     )[0]
@@ -228,7 +219,6 @@ def browse_for_ocio_config(main_window: QMainWindow, settings: QSettings):
 
 
 def browse_for_lut_output_dir(main_window: QMainWindow, settings: QSettings):
-    """"""
     output_dir = QFileDialog.getExistingDirectory()
     main_window.outputDirLineEdit.setText(output_dir)
     check_to_enable_baking(main_window)
@@ -236,7 +226,6 @@ def browse_for_lut_output_dir(main_window: QMainWindow, settings: QSettings):
 
 
 def check_to_enable_baking(main_window: QMainWindow):
-    """"""
     radio_check = any(
         [
             bool(main_window.outputColorSpacesRadioButton.isChecked()),
@@ -245,13 +234,10 @@ def check_to_enable_baking(main_window: QMainWindow):
     )
     output_check = bool(main_window.outputDirLineEdit.text())
 
-    main_window.processBakeLutPushButton.setEnabled(True) if all(
-        [radio_check, output_check]
-    ) else main_window.processBakeLutPushButton.setDisabled(True)
+    main_window.processBakeLutPushButton.setEnabled(all([radio_check, output_check]))
 
 
 def initialize_ui_default(main_window: QMainWindow):
-    """"""
     main_window.cubeSizeComboBox.clear()
     main_window.shaperSizeComboBox.clear()
     main_window.cubeSizeComboBox.addItems(SIZES_LIST)
@@ -293,7 +279,6 @@ def initialize_ui_with_config_data(
     looks_generator: Generator[Any, Any, None],
     displays_generator: Generator[Any, Any, None],
 ):
-    """"""
     main_window.shaperColorSpacesCheckBox.setEnabled(True)
     main_window.outputColorSpacesRadioButton.setEnabled(True)
     main_window.looksRadioButton.setEnabled(True)
@@ -314,7 +299,6 @@ def initialize_ui_with_config_data(
 
 
 def generate_lut_filename(main_window: QMainWindow) -> str:
-    """"""
     lut_info_match = re.match(
         LUT_INFO_REGEX, main_window.lutFormatComboBox.currentText()
     )
@@ -334,7 +318,6 @@ def generate_lut_filename(main_window: QMainWindow) -> str:
 
 
 def build_lut_radical(main_window: QMainWindow) -> str:
-    """"""
     return "_to_".join(
         [
             get_colorspace_input_prefix(main_window),
@@ -344,7 +327,6 @@ def build_lut_radical(main_window: QMainWindow) -> str:
 
 
 def get_colorspace_input_prefix(main_window: QMainWindow) -> str:
-    """"""
     env_prefix = "".join(
         [
             f"seq-{main_window.ocioSeqLineEdit.text()}_"
@@ -368,7 +350,6 @@ def get_colorspace_input_prefix(main_window: QMainWindow) -> str:
 
 
 def get_lut_color_output_suffix(main_window: QMainWindow) -> str:
-    """"""
     output_suffix = (
         main_window.outputColorSpacesComboBox.currentText().replace(" ", "_") + "_"
         if main_window.outputColorSpacesComboBox.currentText()
@@ -411,7 +392,6 @@ def get_lut_color_output_suffix(main_window: QMainWindow) -> str:
 
 
 def get_bake_cmd_data(main_window: QMainWindow) -> dict:
-    """"""
     ocio_config = main_window.ocioCfgLineEdit.text()
     input_space = main_window.inputColorSpacesComboBox.currentText()
     shaper_space = main_window.shaperColorSpacesComboBox.currentText()
