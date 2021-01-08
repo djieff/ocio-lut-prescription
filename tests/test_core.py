@@ -54,22 +54,17 @@ Look: N/A
 LUT Location: /var/tmp/mylut.icc
 
 Executed command: ociobakelut --iconfig /path/to/config.ocio --inputspace test_input_space --outputspace test_output_space --format icc --whitepoint 7000 --displayicc test_display --description test_description_info --copyright test_copyright_info /var/tmp/mylut.icc
---------------------------------------------"""
+--------------------------------------------""",
     },
 }
 
 
 @pytest.mark.parametrize(
-    "bake_cmd_data, report", [
-        (
-                LUT_SCENARIOS["default"]["bake_cmd_data"],
-                LUT_SCENARIOS["default"]["report"]
-        ),
-        (
-                LUT_SCENARIOS["icc"]["bake_cmd_data"],
-                LUT_SCENARIOS["icc"]["report"]
-        )
-    ]
+    "bake_cmd_data, report",
+    [
+        (LUT_SCENARIOS["default"]["bake_cmd_data"], LUT_SCENARIOS["default"]["report"]),
+        (LUT_SCENARIOS["icc"]["bake_cmd_data"], LUT_SCENARIOS["icc"]["report"]),
+    ],
 )
 def test_ocio_reports(bake_cmd_data, report):
     """Test all the provided lut scenarios"""
