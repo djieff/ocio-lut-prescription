@@ -37,12 +37,13 @@ def main():  # pylint: disable=too-many-statements
 
     app = QApplication(sys.argv)
     app.setOrganizationName("djieffx")
-    app.setApplicationName("ocio_lut_prescription")
+    app.setApplicationName("ocio-lut-prescription")
 
     loader = QUiLoader()
     main_window = loader.load(
         os.path.join(os.path.dirname(__file__), "ui", "main_window.ui")
     )
+    main_window.setWindowTitle("ocio-lut-prescription")
     main_window.setWindowIcon(QIcon(":/icons/icon.png"))
     main_window.iccWhitePointLineEdit.setValidator(QIntValidator(1, 10000))
 

@@ -1,9 +1,9 @@
-# ocio_lut_prescription
+# ocio-lut-prescription
 
 ---
 
 ## Summary
-ocio_lut_prescription is a gui tool used to wrap the ociobakelut command
+ocio-lut-prescription is a gui tool used to wrap the ociobakelut command
 
 ---
 
@@ -11,30 +11,30 @@ ocio_lut_prescription is a gui tool used to wrap the ociobakelut command
 
 Note: If you are already familiar with ociobakelut, the ui should be fairly simple to figure out.
 
-![](.docs/fullUI.png)
+![](docs/full_ui.png)
 
 ## Generate a LUT, step by step
 ### Load your ocio configuration
-![](.docs/setConfig.png)
+![](docs/set_config.png)
 
 ### Select Input and Output ColorSpace (or looks, if available)
-![](.docs/setInOut.png)
+![](docs/set_in_out.png)
 
 ### Select Lut Format
-![](.docs/setFormat.png)
+![](docs/set_format.png)
 
 ### Select Destination and bake
-![](.docs/setBake.png)
+![](docs/set_bake.png)
 
 ## Extra Features
 - Persistent settings for ease of repeated use
 
 - system/dark mode
 
-![](.docs/setDarkStyle.png)
+![](docs/set_dark_style.png)
 
 - expand window for operation summary
-![](.docs/expandPrescriptionInfo.png)
+![](docs/expand_prescription_info.png)
 
 
 ## Prerequesites
@@ -45,7 +45,7 @@ Note: If you are already familiar with ociobakelut, the ui should be fairly simp
 ---
 
 ## install
-`pip install ocio_lut_prescription`
+`pip install ocio-lut-prescription`
 
 
 ## Environment setup example (in a linux .bashrc)
@@ -59,7 +59,7 @@ export PATH="/path/to/compiled/ocio/bin:$PATH"
 ---
 
 ## execute
-`ocio_lut_prescription` (in Terminal)
+`ocio-lut-prescription` (in Terminal)
 
 ---
 
@@ -75,7 +75,7 @@ v1.0.0: initial release
 
 ##### Icon copyright
 
-![](.docs/prescription.png)
+![](docs/prescription.png)
 
 
 ---
