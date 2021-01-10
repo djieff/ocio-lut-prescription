@@ -14,7 +14,7 @@ setup(
     author_email='bouchard.jfrancois@gmail.com',
     python_requires='>=3.8',
     classifiers=[
-        'Development Status :: 5 - Production/Stable'
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Science/Research',
         'Intended Audience :: Telecommunications Industry',
@@ -35,6 +35,7 @@ setup(
     install_requires=requirements,
     license="MIT license",
     long_description=readme,
+    long_description_content_type='text/markdown',
     include_package_data=True,
     keywords='ocio-lut-prescription',
     name='ocio-lut-prescription',
@@ -43,6 +44,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/djieff/ocio-lut-prescription',
-    version='1.0.0',
+    version='1.0.1',
     zip_safe=False,
 )
