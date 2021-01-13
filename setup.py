@@ -14,7 +14,7 @@ setup(
     author_email='bouchard.jfrancois@gmail.com',
     python_requires='>=3.8',
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Science/Research',
         'Intended Audience :: Telecommunications Industry',
@@ -44,6 +44,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/djieff/ocio-lut-prescription',
-    version='1.0.1',
+    version='1.1.0',
     zip_safe=False,
 )

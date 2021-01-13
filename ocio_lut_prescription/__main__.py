@@ -99,7 +99,7 @@ def main():  # pylint: disable=too-many-statements
     def process_bake_lut():
         """from the UI, generate a valid ociobakelut command, and execute it"""
         bake_cmd_data = ui.get_bake_cmd_data(main_window)
-        lut_result_file = bake_cmd_data["lut_filename"]
+        bake_cmd_data["lut_filename"] = core.get_lut_filename(bake_cmd_data)
         ociobakelut_cmd = core.get_ociobakelut_cmd(bake_cmd_data)
 
         process = subprocess.Popen(
@@ -110,9 +110,8 @@ def main():  # pylint: disable=too-many-statements
         if process.returncode:
             main_window.resultLineEdit.setText("Error")
             main_window.resultLogTextEdit.setText(stderr.decode("utf-8"))
-            print(" ".join(ociobakelut_cmd))
         else:
-            main_window.resultLineEdit.setText(lut_result_file)
+            main_window.resultLineEdit.setText(bake_cmd_data["lut_filename"])
             stringed_log = core.ocio_report(bake_cmd_data, ociobakelut_cmd)
             main_window.resultLogTextEdit.setText(stringed_log)
 

@@ -1,6 +1,5 @@
 # pylint: disable=too-many-arguments, too-many-locals
 """ui related submodule of the core module"""
-import os
 import re
 from typing import Any, Generator
 
@@ -298,147 +297,37 @@ def initialize_ui_with_config_data(
     check_to_enable_baking(main_window)
 
 
-def generate_lut_filename(main_window: QMainWindow) -> str:
-    lut_info_match = re.match(
-        LUT_INFO_REGEX, main_window.lutFormatComboBox.currentText()
-    )
-    lut_ext = lut_info_match.group("lut_ext")
-    output_dir = main_window.outputDirLineEdit.text()
-
-    lut_radical = (
-        main_window.overrideLutNameLineEdit.text()
-        if main_window.overrideLutNameCheckBox.isChecked()
-        and main_window.overrideLutNameLineEdit.text()
-        else build_lut_radical(main_window)
-    )
-
-    lut_filename = os.path.join(output_dir, ".".join([lut_radical, lut_ext]))
-
-    return lut_filename
-
-
-def build_lut_radical(main_window: QMainWindow) -> str:
-    return "_to_".join(
-        [
-            get_colorspace_input_prefix(main_window),
-            get_lut_color_output_suffix(main_window),
-        ]
-    )
-
-
-def get_colorspace_input_prefix(main_window: QMainWindow) -> str:
-    env_prefix = "".join(
-        [
-            f"seq-{main_window.ocioSeqLineEdit.text()}_"
-            if main_window.ocioSeqLineEdit.text()
-            else "",
-            f"shot-{main_window.ocioShotLineEdit.text()}_"
-            if main_window.ocioShotLineEdit.text()
-            else "",
-        ]
-    )
-
-    input_prefix = main_window.inputColorSpacesComboBox.currentText().replace(" ", "_")
-
-    shaper_prefix = (
-        f"_shaper-{main_window.shaperColorSpacesComboBox.currentText().replace(' ', '_')}"
-        if main_window.shaperColorSpacesCheckBox.isChecked()
-        else ""
-    )
-
-    return "".join([env_prefix, input_prefix, shaper_prefix])
-
-
-def get_lut_color_output_suffix(main_window: QMainWindow) -> str:
-    output_suffix = (
-        main_window.outputColorSpacesComboBox.currentText().replace(" ", "_") + "_"
-        if main_window.outputColorSpacesComboBox.currentText()
-        else main_window.looksComboBox.currentText().replace(" ", "_")
-    )
-
-    cube_size_suffix = (
-        f"c{main_window.cubeSizeComboBox.currentText()}_"
-        if main_window.cubeSizeCheckBox.checkState()
-        else ""
-    )
-
-    shaper_size_suffix = (
-        f"s{main_window.shaperSizeComboBox.currentText()}_"
-        if main_window.shaperSizeCheckBox.checkState()
-        else ""
-    )
-
-    icc_only_suffix = ""
-    if main_window.lutFormatComboBox.currentText() == "icc (.icc)":
-        icc_only_suffix = "".join(
-            [
-                f"D{main_window.iccWhitePointLineEdit.text()}_"
-                if main_window.iccWhitePointCheckBox.isChecked()
-                else "",
-                f"displayICC-{main_window.iccDisplaysComboBox.currentText().replace(' ', '_')}_"
-                if main_window.iccDisplaysCheckBox.isChecked()
-                else "",
-            ]
-        )
-
-    return "".join(
-        [
-            output_suffix,
-            cube_size_suffix,
-            shaper_size_suffix,
-            icc_only_suffix,
-        ]
-    ).rstrip("_")
-
-
 def get_bake_cmd_data(main_window: QMainWindow) -> dict:
-    ocio_config = main_window.ocioCfgLineEdit.text()
-    input_space = main_window.inputColorSpacesComboBox.currentText()
-    shaper_space = main_window.shaperColorSpacesComboBox.currentText()
-    output_space = main_window.outputColorSpacesComboBox.currentText()
-    looks = main_window.looksComboBox.currentText()
-    cube_size = main_window.cubeSizeComboBox.currentText()
-    shaper_size = main_window.shaperSizeComboBox.currentText()
-    icc_white_point = main_window.iccWhitePointLineEdit.text()
-    icc_displays = main_window.iccDisplaysComboBox.currentText()
-    icc_description = main_window.iccDescriptionLineEdit.text()
-    icc_copyright = main_window.iccCopyrightLineEdit.text()
+    lut_field = main_window.lutFormatComboBox.currentText()
+    lut_info_match = re.match(LUT_INFO_REGEX, lut_field)
 
-    lut_info_match = re.match(
-        LUT_INFO_REGEX, main_window.lutFormatComboBox.currentText()
-    )
-    lut_format = lut_info_match.group("lut_format")
-    lut_ext = lut_info_match.group("lut_ext")
-
-    bake_cmd_data = {
-        "ociobakelut_binary": "ociobakelut",
-        "ocio_config": ["--iconfig", ocio_config],
-        "input_space": ["--inputspace", input_space],
-        "lut_format": ["--format", lut_format],
-        "lut_ext": lut_ext,
+    return {
+        "ociobakelut_bin": "ociobakelut",
+        "ocio_config": main_window.ocioCfgLineEdit.text(),
+        "env_seq": main_window.ocioSeqLineEdit.text(),
+        "env_shot": main_window.ocioShotLineEdit.text(),
+        "input_space": main_window.inputColorSpacesComboBox.currentText(),
+        "use_shaper_space": main_window.shaperColorSpacesCheckBox.isChecked(),
+        "shaper_space": main_window.shaperColorSpacesComboBox.currentText(),
+        "use_output_space": main_window.outputColorSpacesRadioButton.isChecked(),
+        "output_space": main_window.outputColorSpacesComboBox.currentText(),
+        "use_looks": main_window.looksRadioButton.isChecked(),
+        "looks": main_window.looksComboBox.currentText(),
+        "use_cube_size": main_window.cubeSizeCheckBox.isChecked(),
+        "cube_size": main_window.cubeSizeComboBox.currentText(),
+        "use_shaper_size": main_window.shaperSizeCheckBox.isChecked(),
+        "shaper_size": main_window.shaperSizeComboBox.currentText(),
+        "lut_format": lut_info_match.group("lut_format"),
+        "lut_ext": lut_info_match.group("lut_ext"),
+        "use_icc_white_point": main_window.iccWhitePointCheckBox.isChecked(),
+        "icc_white_point": main_window.iccWhitePointLineEdit.text(),
+        "use_icc_displays": main_window.iccDisplaysCheckBox.isChecked(),
+        "icc_displays": main_window.iccDisplaysComboBox.currentText(),
+        "use_icc_description": main_window.iccDescriptionCheckBox.isChecked(),
+        "icc_description": main_window.iccDescriptionLineEdit.text(),
+        "use_icc_copyright": main_window.iccCopyrightCheckBox.isChecked(),
+        "icc_copyright": main_window.iccCopyrightLineEdit.text(),
+        "output_dir": main_window.outputDirLineEdit.text(),
+        "use_override_lut_filename": main_window.overrideLutNameCheckBox.isChecked(),
+        "override_lut_filename": main_window.overrideLutNameLineEdit.text(),
     }
-
-    if main_window.shaperColorSpacesCheckBox.checkState():
-        bake_cmd_data["shaper_space"] = ["--shaperspace", shaper_space]
-    if main_window.outputColorSpacesRadioButton.isChecked():
-        bake_cmd_data["output_space"] = ["--outputspace", output_space]
-    if main_window.looksRadioButton.isChecked():
-        bake_cmd_data["looks"] = ["--looks", looks]
-    if main_window.cubeSizeCheckBox.checkState():
-        bake_cmd_data["cube_size"] = ["--cubesize", cube_size]
-    if main_window.shaperSizeCheckBox.checkState():
-        bake_cmd_data["shaper_size"] = ["--shapersize", shaper_size]
-
-    if lut_ext == "icc":
-        if main_window.iccWhitePointCheckBox.checkState():
-            bake_cmd_data["icc_white_point"] = ["--whitepoint", icc_white_point]
-        if main_window.iccDisplaysCheckBox.checkState():
-            bake_cmd_data["icc_displays"] = ["--displayicc", icc_displays]
-        if main_window.iccDescriptionCheckBox.checkState():
-            bake_cmd_data["icc_description"] = ["--description", icc_description]
-        if main_window.iccCopyrightCheckBox.checkState():
-            bake_cmd_data["icc_copyright"] = ["--copyright", icc_copyright]
-
-    bake_cmd_data["lut_filename"] = generate_lut_filename(main_window)
-
-    return bake_cmd_data
