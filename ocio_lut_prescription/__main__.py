@@ -4,6 +4,7 @@ Icon Copyright:
 Prescription by Dam from the Noun Project
 """
 from contextlib import contextmanager
+from dataclasses import replace
 from functools import wraps
 import os
 import signal
@@ -98,8 +99,9 @@ def main():  # pylint: disable=too-many-statements
     @with_ocio_context()
     def process_bake_lut():
         """from the UI, generate a valid ociobakelut command, and execute it"""
-        bake_cmd_data = ui.get_bake_cmd_data(main_window)
-        bake_cmd_data["lut_filename"] = core.get_lut_filename(bake_cmd_data)
+        bake_cmd_data = ui.BakeCmdData(*ui.get_bake_cmd_data(main_window))
+        lut_name_param = {"lut_filename": core.get_lut_filename(bake_cmd_data)}
+        bake_cmd_data = replace(bake_cmd_data, **lut_name_param)
         ociobakelut_cmd = core.get_ociobakelut_cmd(bake_cmd_data)
 
         process = subprocess.Popen(
@@ -111,7 +113,7 @@ def main():  # pylint: disable=too-many-statements
             main_window.resultLineEdit.setText("Error")
             main_window.resultLogTextEdit.setText(stderr.decode("utf-8"))
         else:
-            main_window.resultLineEdit.setText(bake_cmd_data["lut_filename"])
+            main_window.resultLineEdit.setText(bake_cmd_data.lut_filename)
             stringed_log = core.ocio_report(bake_cmd_data, ociobakelut_cmd)
             main_window.resultLogTextEdit.setText(stringed_log)
 

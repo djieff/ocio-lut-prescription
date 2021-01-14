@@ -1,6 +1,7 @@
 # pylint: disable=too-many-arguments, too-many-locals
 """ui related submodule of the core module"""
 import re
+from dataclasses import dataclass
 from typing import Any, Generator
 
 from PySide2.QtCore import Qt, QSettings
@@ -11,6 +12,41 @@ from ocio_lut_prescription.core import ocio
 
 LUT_INFO_REGEX = re.compile(r"^(?P<lut_format>\w+) \(.(?P<lut_ext>\w{3})\)$")
 SIZES_LIST = [str(x) for x in range(1, 67)]
+
+
+@dataclass
+class BakeCmdData:  # pylint: disable=too-many-instance-attributes
+    """Class keeping the content of the main window to be used when building the command line"""
+
+    ociobakelut_bin: str
+    ocio_config: str
+    env_seq: str
+    env_shot: str
+    input_space: str
+    use_shaper_space: bool
+    shaper_space: str
+    use_output_space: bool
+    output_space: str
+    use_looks: bool
+    looks: str
+    use_cube_size: bool
+    cube_size: str
+    use_shaper_size: bool
+    shaper_size: str
+    lut_format: str
+    lut_ext: str
+    use_icc_white_point: bool
+    icc_white_point: str
+    use_icc_displays: bool
+    icc_displays: str
+    use_icc_description: bool
+    icc_description: str
+    use_icc_copyright: bool
+    icc_copyright: str
+    output_dir: str
+    use_override_lut_filename: bool
+    override_lut_filename: str
+    lut_filename: str
 
 
 def load_ocio_config(main_window: QMainWindow, settings: QSettings):
@@ -297,37 +333,38 @@ def initialize_ui_with_config_data(
     check_to_enable_baking(main_window)
 
 
-def get_bake_cmd_data(main_window: QMainWindow) -> dict:
+def get_bake_cmd_data(main_window: QMainWindow) -> tuple:
     lut_field = main_window.lutFormatComboBox.currentText()
     lut_info_match = re.match(LUT_INFO_REGEX, lut_field)
 
-    return {
-        "ociobakelut_bin": "ociobakelut",
-        "ocio_config": main_window.ocioCfgLineEdit.text(),
-        "env_seq": main_window.ocioSeqLineEdit.text(),
-        "env_shot": main_window.ocioShotLineEdit.text(),
-        "input_space": main_window.inputColorSpacesComboBox.currentText(),
-        "use_shaper_space": main_window.shaperColorSpacesCheckBox.isChecked(),
-        "shaper_space": main_window.shaperColorSpacesComboBox.currentText(),
-        "use_output_space": main_window.outputColorSpacesRadioButton.isChecked(),
-        "output_space": main_window.outputColorSpacesComboBox.currentText(),
-        "use_looks": main_window.looksRadioButton.isChecked(),
-        "looks": main_window.looksComboBox.currentText(),
-        "use_cube_size": main_window.cubeSizeCheckBox.isChecked(),
-        "cube_size": main_window.cubeSizeComboBox.currentText(),
-        "use_shaper_size": main_window.shaperSizeCheckBox.isChecked(),
-        "shaper_size": main_window.shaperSizeComboBox.currentText(),
-        "lut_format": lut_info_match.group("lut_format"),
-        "lut_ext": lut_info_match.group("lut_ext"),
-        "use_icc_white_point": main_window.iccWhitePointCheckBox.isChecked(),
-        "icc_white_point": main_window.iccWhitePointLineEdit.text(),
-        "use_icc_displays": main_window.iccDisplaysCheckBox.isChecked(),
-        "icc_displays": main_window.iccDisplaysComboBox.currentText(),
-        "use_icc_description": main_window.iccDescriptionCheckBox.isChecked(),
-        "icc_description": main_window.iccDescriptionLineEdit.text(),
-        "use_icc_copyright": main_window.iccCopyrightCheckBox.isChecked(),
-        "icc_copyright": main_window.iccCopyrightLineEdit.text(),
-        "output_dir": main_window.outputDirLineEdit.text(),
-        "use_override_lut_filename": main_window.overrideLutNameCheckBox.isChecked(),
-        "override_lut_filename": main_window.overrideLutNameLineEdit.text(),
-    }
+    return (
+        "ociobakelut",
+        main_window.ocioCfgLineEdit.text(),
+        main_window.ocioSeqLineEdit.text(),
+        main_window.ocioShotLineEdit.text(),
+        main_window.inputColorSpacesComboBox.currentText(),
+        main_window.shaperColorSpacesCheckBox.isChecked(),
+        main_window.shaperColorSpacesComboBox.currentText(),
+        main_window.outputColorSpacesRadioButton.isChecked(),
+        main_window.outputColorSpacesComboBox.currentText(),
+        main_window.looksRadioButton.isChecked(),
+        main_window.looksComboBox.currentText(),
+        main_window.cubeSizeCheckBox.isChecked(),
+        main_window.cubeSizeComboBox.currentText(),
+        main_window.shaperSizeCheckBox.isChecked(),
+        main_window.shaperSizeComboBox.currentText(),
+        lut_info_match.group("lut_format"),
+        lut_info_match.group("lut_ext"),
+        main_window.iccWhitePointCheckBox.isChecked(),
+        main_window.iccWhitePointLineEdit.text(),
+        main_window.iccDisplaysCheckBox.isChecked(),
+        main_window.iccDisplaysComboBox.currentText(),
+        main_window.iccDescriptionCheckBox.isChecked(),
+        main_window.iccDescriptionLineEdit.text(),
+        main_window.iccCopyrightCheckBox.isChecked(),
+        main_window.iccCopyrightLineEdit.text(),
+        main_window.outputDirLineEdit.text(),
+        main_window.overrideLutNameCheckBox.isChecked(),
+        main_window.overrideLutNameLineEdit.text(),
+        "",
+    )
