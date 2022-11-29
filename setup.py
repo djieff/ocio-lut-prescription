@@ -40,6 +40,7 @@ setup(
     keywords='ocio-lut-prescription',
     name='ocio-lut-prescription',
     packages=find_packages(include=['ocio_lut_prescription', 'ocio_lut_prescription.*']),
+    package_data={'ocio_lut_prescription': ['ui/*.ui', 'ui/*.qrc']},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
