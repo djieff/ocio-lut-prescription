@@ -2,7 +2,8 @@
 """ui related submodule of the core module"""
 import re
 from dataclasses import dataclass
-from typing import Any, Generator
+from typing import Any
+from collections.abc import Generator
 
 from PySide2.QtCore import Qt, QSettings
 from PySide2.QtGui import QColor, QPalette
