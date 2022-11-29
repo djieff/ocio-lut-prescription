@@ -5,7 +5,7 @@ Prescription by Dam from the Noun Project
 """
 from contextlib import contextmanager
 from dataclasses import replace
-from functools import wraps
+from functools import partial, wraps
 import os
 import signal
 import subprocess
@@ -104,80 +104,80 @@ def main():  # pylint: disable=too-many-statements
         bake_cmd_data = replace(bake_cmd_data, **lut_name_param)
         ociobakelut_cmd = core.get_ociobakelut_cmd(bake_cmd_data)
 
-        process = subprocess.Popen(
+        with subprocess.Popen(
             ociobakelut_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        _, stderr = process.communicate()
+        ) as process:
+            _, stderr = process.communicate()
 
-        if process.returncode:
-            main_window.resultLineEdit.setText("Error")
-            main_window.resultLogTextEdit.setText(stderr.decode("utf-8"))
-        else:
-            main_window.resultLineEdit.setText(bake_cmd_data.lut_filename)
-            stringed_log = core.ocio_report(bake_cmd_data, ociobakelut_cmd)
-            main_window.resultLogTextEdit.setText(stringed_log)
+            if process.returncode:
+                main_window.resultLineEdit.setText("Error")
+                main_window.resultLogTextEdit.setText(stderr.decode("utf-8"))
+            else:
+                main_window.resultLineEdit.setText(bake_cmd_data.lut_filename)
+                stringed_log = core.ocio_report(bake_cmd_data, ociobakelut_cmd)
+                main_window.resultLogTextEdit.setText(stringed_log)
 
     main_window.ocioCfgLoadPushButton.clicked.connect(
-        lambda x: ui.browse_for_ocio_config(main_window, settings)
+        partial(ui.browse_for_ocio_config, main_window, settings)
     )
     main_window.outputDirBrowsePushButton.clicked.connect(
-        lambda x: ui.browse_for_lut_output_dir(main_window, settings)
+        partial(ui.browse_for_lut_output_dir, main_window, settings)
     )
     main_window.ocioCfgLineEdit.textChanged.connect(
-        lambda x: ui.load_ocio_config(main_window, settings)
+        partial(ui.load_ocio_config, main_window, settings)
     )
     main_window.outputDirLineEdit.textChanged.connect(
-        lambda x: ui.check_to_enable_baking(main_window)
+        partial(ui.check_to_enable_baking, main_window)
     )
     main_window.outputDirLineEdit.textChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.inputColorSpacesComboBox.currentIndexChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.outputColorSpacesComboBox.currentIndexChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.shaperColorSpacesComboBox.currentIndexChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.looksComboBox.currentIndexChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.lutFormatComboBox.currentIndexChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.lutFormatComboBox.currentIndexChanged.connect(
-        lambda x: ui.check_for_icc(
-            main_window, main_window.lutFormatComboBox.currentText()
+        partial(
+            ui.check_for_icc, main_window, main_window.lutFormatComboBox.currentText()
         )
     )
     main_window.cubeSizeComboBox.currentIndexChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.shaperSizeComboBox.currentIndexChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.iccWhitePointLineEdit.textChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.iccDisplaysComboBox.currentIndexChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.iccDescriptionLineEdit.textChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.iccCopyrightLineEdit.textChanged.connect(
-        lambda x: ui.save_settings(settings, main_window)
+        partial(ui.save_settings, settings, main_window)
     )
     main_window.actionSetDarkStyle.triggered.connect(
-        lambda x: ui.set_dark_style(app, settings)
+        partial(ui.set_dark_style, app, settings)
     )
     main_window.actionSetSystemStyle.triggered.connect(
-        lambda x: ui.set_system_style(app, settings)
+        partial(ui.set_system_style, app, settings)
     )
     main_window.actionSettingsClear.triggered.connect(
-        lambda x: ui.settings_clear(app, settings, main_window)
+        partial(ui.settings_clear, app, settings, main_window)
     )
     main_window.processBakeLutPushButton.clicked.connect(process_bake_lut)
 
