@@ -38,8 +38,8 @@ Note: If you are already familiar with ociobakelut, the ui should be fairly simp
 
 
 ## Prerequesites
-- PyOpenColorIOv2
-- python3.8
+- opencolorio>=2
+- python>=3.8
 - pyside2
 
 ---
@@ -48,13 +48,7 @@ Note: If you are already familiar with ociobakelut, the ui should be fairly simp
 `pip install ocio-lut-prescription`
 
 
-## Environment setup example (in a linux .bashrc)
-```
-# OCIO
-export PYTHONPATH="${PYTHONPATH}:/path/to/compiled/ocio/lib/python3.8/site-packages"
-export LD_LIBRARY_PATH="/path/to/compiled/ocio/lib:$LD_LIBRARY_PATH"
-export PATH="/path/to/compiled/ocio/bin:$PATH"
-```
+
 
 ---
 
@@ -69,6 +63,7 @@ export PATH="/path/to/compiled/ocio/bin:$PATH"
 ## Release history
 
 v1.0.0: initial release
+v1.2.0: bug fixes, pylink update
 
 ---
 ## Misc
