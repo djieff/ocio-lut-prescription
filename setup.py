@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-requirements = ['PySide2']
+requirements = ['PySide2', 'opencolorio>=2', ]
 
 setup_requirements = ['pytest-runner', ]
 
