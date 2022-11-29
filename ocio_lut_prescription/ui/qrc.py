@@ -1,3 +1,4 @@
+# pylint: disable=c-extension-no-member
 # Resource object code (Python 3)
 # Created by: object code
 # Created by: The Resource Compiler for Qt version 5.15.2

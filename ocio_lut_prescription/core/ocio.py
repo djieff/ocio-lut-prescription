@@ -1,3 +1,4 @@
+# pylint: disable=c-extension-no-member
 """ocio python module of ocio_lut_prescription
 """
 from typing import Any, Generator

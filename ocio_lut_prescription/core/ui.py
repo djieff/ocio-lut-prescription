@@ -1,4 +1,4 @@
-# pylint: disable=too-many-arguments, too-many-locals
+# pylint: disable=no-name-in-module
 """ui related submodule of the core module"""
 import re
 from dataclasses import dataclass

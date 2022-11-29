@@ -1,3 +1,4 @@
+# pylint: disable=no-name-in-module
 """UI Wrapper script over the "ociobakelut" command
 
 Icon Copyright:
@@ -25,7 +26,7 @@ from ocio_lut_prescription.core import ui
 from ocio_lut_prescription.ui import qrc  # pylint: disable=unused-import
 
 
-def main():  # pylint: disable=too-many-statements
+def main():
     """main application function"""
     # Adds Ctrl+C support to kill app
     signal.signal(signal.SIGINT, signal.SIG_DFL)
